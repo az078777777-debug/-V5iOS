@@ -1,0 +1,57 @@
+name: Build V5iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract V5iOS
+        run: |
+          unzip -q V5iOS-v0.1.zip
+
+      - name: Build iPhone app
+        run: |
+          cd V5iOS-v0.1
+
+          xcodebuild \
+            -project V5iOS.xcodeproj \
+            -scheme V5iOS \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Create unsigned IPA
+        run: |
+          cd V5iOS-v0.1
+
+          APP=$(find build/Build/Products/Release-iphoneos \
+            -maxdepth 1 \
+            -name "*.app" \
+            -print \
+            -quit)
+
+          test -n "$APP"
+
+          mkdir Payload
+          cp -R "$APP" Payload/
+
+          zip -r V5iOS-unsigned.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: V5iOS-unsigned-ipa
+          path: V5iOS-v0.1/V5iOS-unsigned.ipa
