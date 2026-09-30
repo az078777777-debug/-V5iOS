@@ -16,14 +16,14 @@ jobs:
       - name: Checkout V5iOS repository
         uses: actions/checkout@v4
 
-      - name: Download latest successful Madeira runtime
+      - name: Download known-good Madeira runtime artifact
         run: |
           set -euo pipefail
           rm -rf upstream
           mkdir -p upstream
 
           curl -fL --retry 5 --retry-delay 3 \
-            "https://nightly.link/Makaria122/Madeira-IPA/workflows/build/main/Madeira-unsigned.zip" \
+            "https://nightly.link/Makaria122/Madeira-IPA/actions/artifacts/10930831599.zip" \
             -o /tmp/madeira-artifact.zip
 
           unzip -q /tmp/madeira-artifact.zip -d upstream
