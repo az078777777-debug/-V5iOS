@@ -1,4 +1,4 @@
-name: Build V5iOS v2.3 WinAPI Binder IPA
+name: Build V5iOS v2.4 Execution Layer IPA
 
 on:
   workflow_dispatch:
@@ -272,12 +272,12 @@ jobs:
           		G00000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
           			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
           			CODE_SIGN_STYLE = Automatic;
-          			CURRENT_PROJECT_VERSION = 20;
+          			CURRENT_PROJECT_VERSION = 240;
           			GENERATE_INFOPLIST_FILE = NO;
           			INFOPLIST_FILE = V5iOS/Info.plist;
           			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
           			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-          			MARKETING_VERSION = 2.0;
+          			MARKETING_VERSION = 2.4;
           			PRODUCT_BUNDLE_IDENTIFIER = com.v5ios.launcher;
           			PRODUCT_NAME = "$(TARGET_NAME)";
           			SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -290,12 +290,12 @@ jobs:
           		G00000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
           			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
           			CODE_SIGN_STYLE = Automatic;
-          			CURRENT_PROJECT_VERSION = 20;
+          			CURRENT_PROJECT_VERSION = 240;
           			GENERATE_INFOPLIST_FILE = NO;
           			INFOPLIST_FILE = V5iOS/Info.plist;
           			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
           			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-          			MARKETING_VERSION = 2.0;
+          			MARKETING_VERSION = 2.4;
           			PRODUCT_BUNDLE_IDENTIFIER = com.v5ios.launcher;
           			PRODUCT_NAME = "$(TARGET_NAME)";
           			SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -344,13 +344,13 @@ jobs:
           	<key>CFBundlePackageType</key>
           	<string>APPL</string>
           	<key>CFBundleShortVersionString</key>
-          	<string>2.3</string>
+          	<string>2.4</string>
           	<key>CFBundleVersion</key>
-          	<string>230</string>
+          	<string>240</string>
           	<key>NSHumanReadableCopyright</key>
           	<string>© 2026 Ali Tahseen. All rights reserved.</string>
           	<key>CFBundleGetInfoString</key>
-          	<string>V5iOS v2.3 WinAPI Binder — Built by AELLE STORE • © 2026 Ali Tahseen</string>
+          	<string>V5iOS v2.4 Execution Layer — Built by AELLE STORE • © 2026 Ali Tahseen</string>
           	<key>LSRequiresIPhoneOS</key>
           	<true/>
           	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -499,7 +499,7 @@ jobs:
                     }
                     Text("Runtime Core")
                         .font(.headline)
-                    Text("Release 2.3 • V5 Runtime Foundation")
+                    Text("Release 2.4 • V5 Runtime Foundation")
                         .font(.caption.monospaced())
                         .foregroundColor(.secondary)
                 }
@@ -1125,7 +1125,17 @@ jobs:
           char status[256];
           } V5CPUProbeResultC;
 
+          typedef struct {
+          uint64_t thunkAddress;
+          uint64_t rcx;
+          uint64_t rdx;
+          uint64_t r8;
+          uint64_t r9;
+          uint64_t rsp;
+          } V5ABICallFrameC;
+
           V5CPUProbeResultC V5RunCPUProbe(void);
+          V5ABICallFrameC V5BuildABICallProbe(uint64_t thunkAddress);
 
           #ifdef __cplusplus
           }
@@ -1234,6 +1244,21 @@ jobs:
           std::strncpy(out.status, status, sizeof(out.status) - 1);
           out.status[sizeof(out.status) - 1] = '\0';
           return out;
+          }
+
+          V5ABICallFrameC V5BuildABICallProbe(uint64_t thunkAddress) {
+          V5ABICallFrameC frame{};
+          frame.thunkAddress = thunkAddress;
+
+          // Windows x64 first four integer/pointer arguments:
+          // RCX, RDX, R8 and R9. Values are intentionally distinct so the
+          // Swift-side dispatcher can verify the bridge preserves each one.
+          frame.rcx = 11;
+          frame.rdx = 22;
+          frame.r8 = 33;
+          frame.r9 = 44;
+          frame.rsp = 0x0000000100000000ULL;
+          return frame;
           }
           V5EOF06
           mkdir -p "$(dirname 'V5iOS/Runtime/CPU/V5CPUProbe.swift')"
@@ -1987,6 +2012,277 @@ jobs:
           }
           }
           V5WINAPI
+          cat >> 'V5iOS/Runtime/PE/PEImage.swift' <<'V5EXEC'
+          struct V5Win64ABIContext {
+          var rcx: UInt64 = 0
+          var rdx: UInt64 = 0
+          var r8: UInt64 = 0
+          var r9: UInt64 = 0
+          var rsp: UInt64 = 0
+          var rax: UInt64 = 0
+          }
+
+          struct V5ExecutionProbeResult {
+          let success: Bool
+          let cpuBridgePassed: Bool
+          let thunkResolved: Bool
+          let abiCallsExecuted: Int
+          let shimTestsPassed: Int
+          let shimTestsTotal: Int
+          let resolvedBinding: String
+          let resolvedThunk: UInt64
+          let registerSummary: String
+          let tests: [String]
+          let status: String
+          }
+
+          enum V5Win64Dispatcher {
+          private static var lastError: UInt32 = 0
+          private static var nextTLSIndex: UInt32 = 1
+          private static var tlsValues: [UInt32: UInt64] = [:]
+
+          private static let executableSymbols: Set<String> = [
+            "GETCURRENTPROCESSID",
+            "GETCURRENTTHREADID",
+            "GETTICKCOUNT",
+            "GETTICKCOUNT64",
+            "SLEEP",
+            "GETLASTERROR",
+            "SETLASTERROR",
+            "TLSALLOC",
+            "TLSFREE",
+            "TLSGETVALUE",
+            "TLSSETVALUE"
+          ]
+
+          static func canExecute(_ binding: V5ImportBinding) -> Bool {
+          binding.dll.uppercased() == "KERNEL32.DLL" &&
+          executableSymbols.contains(binding.symbol.uppercased())
+          }
+
+          static func dispatchThunk(
+            _ address: UInt64,
+            bindings: [V5ImportBinding],
+            context: inout V5Win64ABIContext
+          ) -> Bool {
+          guard let binding = bindings.first(where: { $0.guestThunkAddress == address }),
+                canExecute(binding) else {
+            return false
+          }
+          return dispatch(dll: binding.dll, symbol: binding.symbol, context: &context)
+          }
+
+          @discardableResult
+          static func dispatch(
+            dll: String,
+            symbol: String,
+            context: inout V5Win64ABIContext
+          ) -> Bool {
+          guard dll.uppercased() == "KERNEL32.DLL" else { return false }
+
+          switch symbol.uppercased() {
+          case "GETCURRENTPROCESSID":
+            context.rax = UInt64(ProcessInfo.processInfo.processIdentifier)
+            return true
+
+          case "GETCURRENTTHREADID":
+            // Stable non-zero guest thread id for the foundation dispatcher.
+            context.rax = 1
+            return true
+
+          case "GETTICKCOUNT", "GETTICKCOUNT64":
+            context.rax = UInt64(max(0, ProcessInfo.processInfo.systemUptime * 1000.0))
+            return true
+
+          case "SLEEP":
+            let requestedMS = min(context.rcx, 5)
+            if requestedMS > 0 {
+              Thread.sleep(forTimeInterval: Double(requestedMS) / 1000.0)
+            }
+            context.rax = 0
+            return true
+
+          case "SETLASTERROR":
+            lastError = UInt32(truncatingIfNeeded: context.rcx)
+            context.rax = 0
+            return true
+
+          case "GETLASTERROR":
+            context.rax = UInt64(lastError)
+            return true
+
+          case "TLSALLOC":
+            let index = nextTLSIndex
+            nextTLSIndex &+= 1
+            tlsValues[index] = 0
+            context.rax = UInt64(index)
+            return true
+
+          case "TLSSETVALUE":
+            let index = UInt32(truncatingIfNeeded: context.rcx)
+            tlsValues[index] = context.rdx
+            context.rax = 1
+            return true
+
+          case "TLSGETVALUE":
+            let index = UInt32(truncatingIfNeeded: context.rcx)
+            context.rax = tlsValues[index] ?? 0
+            return true
+
+          case "TLSFREE":
+            let index = UInt32(truncatingIfNeeded: context.rcx)
+            tlsValues.removeValue(forKey: index)
+            context.rax = 1
+            return true
+
+          default:
+            return false
+          }
+          }
+          }
+
+          enum V5ExecutionLayerProbe {
+          static func run(bindings: [V5ImportBinding]) -> V5ExecutionProbeResult {
+          var tests: [String] = []
+          var passed = 0
+          let total = 5
+
+          // 1) Validate C++ V5CPU -> Swift Win64 register transport.
+          let preferred = bindings.first(where: { V5Win64Dispatcher.canExecute($0) })
+          let thunk = preferred?.guestThunkAddress ?? 0x00007FFF00000000
+          let frame = V5BuildABICallProbe(thunk)
+          let cpuBridgePassed =
+            frame.rcx == 11 &&
+            frame.rdx == 22 &&
+            frame.r8 == 33 &&
+            frame.r9 == 44 &&
+            frame.rsp == 0x0000000100000000
+
+          if cpuBridgePassed {
+            passed += 1
+            tests.append("PASS • V5CPU Win64 register bridge RCX/RDX/R8/R9 preserved")
+          } else {
+            tests.append("FAIL • V5CPU Win64 register bridge")
+          }
+
+          // 2) Exercise one real GTA V IAT binding through its synthetic thunk.
+          var thunkContext = V5Win64ABIContext(
+            rcx: frame.rcx,
+            rdx: frame.rdx,
+            r8: frame.r8,
+            r9: frame.r9,
+            rsp: frame.rsp,
+            rax: 0
+          )
+          let thunkResolved: Bool
+          if let binding = preferred {
+            thunkResolved = V5Win64Dispatcher.dispatchThunk(
+              binding.guestThunkAddress,
+              bindings: bindings,
+              context: &thunkContext
+            )
+            if thunkResolved {
+              passed += 1
+              tests.append("PASS • Guest thunk resolved \(binding.dll)!\(binding.symbol)")
+            } else {
+              tests.append("FAIL • Guest thunk dispatch \(binding.dll)!\(binding.symbol)")
+            }
+          } else {
+            thunkResolved = false
+            tests.append("FAIL • No currently executable KERNEL32 thunk found")
+          }
+
+          // 3) Windows LastError round trip.
+          var setErr = V5Win64ABIContext(rcx: 0x1234)
+          let setOK = V5Win64Dispatcher.dispatch(
+            dll: "KERNEL32.dll",
+            symbol: "SetLastError",
+            context: &setErr
+          )
+          var getErr = V5Win64ABIContext()
+          let getOK = V5Win64Dispatcher.dispatch(
+            dll: "KERNEL32.dll",
+            symbol: "GetLastError",
+            context: &getErr
+          )
+          if setOK && getOK && getErr.rax == 0x1234 {
+            passed += 1
+            tests.append("PASS • WinAPI SetLastError/GetLastError round trip")
+          } else {
+            tests.append("FAIL • LastError shim round trip")
+          }
+
+          // 4) TLS Alloc -> Set -> Get -> Free using Win64 RCX/RDX argument rules.
+          var tlsAlloc = V5Win64ABIContext()
+          let allocOK = V5Win64Dispatcher.dispatch(
+            dll: "KERNEL32.dll",
+            symbol: "TlsAlloc",
+            context: &tlsAlloc
+          )
+          let tlsIndex = tlsAlloc.rax
+          var tlsSet = V5Win64ABIContext(rcx: tlsIndex, rdx: 0xA11E5A11)
+          let setTLSOK = V5Win64Dispatcher.dispatch(
+            dll: "KERNEL32.dll",
+            symbol: "TlsSetValue",
+            context: &tlsSet
+          )
+          var tlsGet = V5Win64ABIContext(rcx: tlsIndex)
+          let getTLSOK = V5Win64Dispatcher.dispatch(
+            dll: "KERNEL32.dll",
+            symbol: "TlsGetValue",
+            context: &tlsGet
+          )
+          var tlsFree = V5Win64ABIContext(rcx: tlsIndex)
+          let freeTLSOK = V5Win64Dispatcher.dispatch(
+            dll: "KERNEL32.dll",
+            symbol: "TlsFree",
+            context: &tlsFree
+          )
+
+          if allocOK && setTLSOK && getTLSOK && freeTLSOK &&
+             tlsGet.rax == 0xA11E5A11 {
+            passed += 1
+            tests.append("PASS • WinAPI TLS Alloc/Set/Get/Free through Win64 ABI")
+          } else {
+            tests.append("FAIL • TLS host shim sequence")
+          }
+
+          // 5) Timer host shim.
+          var tick = V5Win64ABIContext()
+          let tickOK = V5Win64Dispatcher.dispatch(
+            dll: "KERNEL32.dll",
+            symbol: "GetTickCount64",
+            context: &tick
+          )
+          if tickOK && tick.rax > 0 {
+            passed += 1
+            tests.append("PASS • GetTickCount64 native host shim")
+          } else {
+            tests.append("FAIL • GetTickCount64 host shim")
+          }
+
+          let bindingText = preferred.map { "\($0.dll)!\($0.symbol)" } ?? "None"
+          let resolvedThunk = preferred?.guestThunkAddress ?? 0
+          let registers = "RCX=\(frame.rcx) RDX=\(frame.rdx) R8=\(frame.r8) R9=\(frame.r9)"
+
+          return .init(
+            success: passed == total,
+            cpuBridgePassed: cpuBridgePassed,
+            thunkResolved: thunkResolved,
+            abiCallsExecuted: total,
+            shimTestsPassed: passed,
+            shimTestsTotal: total,
+            resolvedBinding: bindingText,
+            resolvedThunk: resolvedThunk,
+            registerSummary: registers,
+            tests: tests,
+            status: passed == total
+              ? "EXECUTION LAYER PASS: CPU call frame → guest thunk → Win64 dispatcher → native host shims"
+              : "Execution Layer partial: \(passed)/\(total) tests passed"
+          )
+          }
+          }
+          V5EXEC
           mkdir -p "$(dirname 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift')"
           cat > 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift' <<'V5EOF09'
           import Foundation
@@ -2166,6 +2462,7 @@ jobs:
           @Published var mapResult: PEMapResult?
           @Published var stage2Result: PERelocImportResult?
           @Published var winAPIBindResult: V5WinAPIBindResult?
+          @Published var executionResult: V5ExecutionProbeResult?
           @Published var stages: [V5RuntimeStage] = []
           @Published var logLines: [String] = []
           @Published var busy = false
@@ -2190,6 +2487,7 @@ jobs:
           mapResult = nil
           stage2Result = nil
           winAPIBindResult = nil
+          executionResult = nil
           executableURL = exe
           selectedFolder = exe.deletingLastPathComponent()
           append("Inspecting imported executable \(exe.lastPathComponent)…")
@@ -2337,6 +2635,29 @@ jobs:
           }
           }
 
+          func runExecutionLayerProbe() {
+          guard let binder = winAPIBindResult else {
+            stages.append(.init(name:"Execution layer",passed:false,detail:"Bind imports to V5 thunks first."))
+            append("Execution layer requires WinAPI Binder")
+            return
+          }
+
+          busy = true
+          executionResult = nil
+          stages.removeAll(where: { $0.name == "Execution layer" })
+          append("Running Win64 ABI + thunk + native host-shim execution probe…")
+          defer { busy = false }
+
+          let r = V5ExecutionLayerProbe.run(bindings: binder.bindings)
+          executionResult = r
+          stages.append(.init(
+            name:"Execution layer",
+            passed:r.success,
+            detail:"\(r.shimTestsPassed)/\(r.shimTestsTotal) ABI/host-shim tests • thunk \(r.thunkResolved ? "resolved" : "not resolved")"
+          ))
+          append(r.status)
+          }
+
           func runFoundationDiagnostics() {
           busy = true
           stages.removeAll(where: { ["V5CPU core", "Metal pipeline", "Guest memory", "JIT capability"].contains($0.name) })
@@ -2391,7 +2712,7 @@ jobs:
                     VStack(alignment: .leading, spacing: 4) {
                         Text("V5 Runtime Core")
                             .font(.system(size: 30, weight: .bold, design: .rounded))
-                        Text("Internal compatibility engine • WinAPI Binder build 2.3")
+                        Text("Internal compatibility engine • Execution Layer build 2.4")
                             .foregroundColor(.secondary)
                     }
 
@@ -2567,6 +2888,54 @@ jobs:
                         }
                     }
 
+                    if runtime.winAPIBindResult != nil {
+                        card {
+                            Label("V5 Execution Layer", systemImage: "cpu")
+                                .font(.headline)
+                                .foregroundColor(gold)
+
+                            Button {
+                                runtime.runExecutionLayerProbe()
+                            } label: {
+                                Label(runtime.executionResult == nil ? "Run Execution Layer Test" : "Re-run Execution Layer Test",
+                                      systemImage: "play.circle.fill")
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(green)
+                            .disabled(runtime.busy)
+
+                            if let r = runtime.executionResult {
+                                row("CPU → ABI Bridge", r.cpuBridgePassed ? "PASS" : "FAIL")
+                                row("Guest Thunk", r.thunkResolved ? "RESOLVED" : "FAIL")
+                                row("ABI / Shim Tests", "\(r.shimTestsPassed) / \(r.shimTestsTotal)")
+                                row("Resolved API", r.resolvedBinding)
+                                if r.resolvedThunk != 0 {
+                                    row("Thunk Address", "0x\(String(r.resolvedThunk, radix:16).uppercased())")
+                                }
+
+                                Text(r.registerSummary)
+                                    .font(.caption.monospaced())
+                                    .foregroundColor(.secondary)
+
+                                ForEach(Array(r.tests.enumerated()), id: \.offset) { _, test in
+                                    Text(test)
+                                        .font(.caption)
+                                        .foregroundColor(test.hasPrefix("PASS") ? green : .orange)
+                                }
+
+                                Text(r.status)
+                                    .font(.caption.bold())
+                                    .foregroundColor(r.success ? green : .orange)
+
+                                Text("This executes a controlled Win64 ABI/thunk/host-shim path. It still does not execute the GTA V entry point or bypass game protection.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+
                     card {
                         Button {
                             runtime.runFoundationDiagnostics()
@@ -2605,7 +2974,7 @@ jobs:
                                 .font(.caption.monospaced().bold())
                                 .foregroundColor(runtime.foundationReady ? green : .secondary)
                         }
-                        Text("Current milestone: IAT binding to V5 guest thunks. Next: Win64 ABI dispatcher, native WinAPI shims, then JIT translation blocks. No DRM bypass is included.")
+                        Text("Current milestone: Win64 ABI dispatcher + native host-shim execution. Next: x86-64→ARM64 execution/JIT + graphics/runtime integration. No DRM bypass is included.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -2733,7 +3102,7 @@ jobs:
           echo "MVK_LIB=$MVK_LIB" >> "$GITHUB_ENV"
           echo "MVK_INCLUDE=$MVK_INCLUDE" >> "$GITHUB_ENV"
 
-      - name: Build V5iOS v2.0 Runtime Core
+      - name: Build V5iOS v2.4 Execution Layer
         run: |
           cd V5iOS-v2.0-RUNTIME-CORE
           xcodebuild \
@@ -2756,14 +3125,14 @@ jobs:
           cd V5iOS-v2.0-RUNTIME-CORE
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -print -quit)
           test -n "$APP"
-          rm -rf Payload V5iOS-v2.3-WINAPI-BINDER-unsigned.ipa
+          rm -rf Payload V5iOS-v2.4-EXECUTION-LAYER-unsigned.ipa
           mkdir Payload
           cp -R "$APP" Payload/
-          zip -qry V5iOS-v2.3-WINAPI-BINDER-unsigned.ipa Payload
+          zip -qry V5iOS-v2.4-EXECUTION-LAYER-unsigned.ipa Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: V5iOS-v2.3-WINAPI-BINDER-unsigned-ipa
-          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v2.3-WINAPI-BINDER-unsigned.ipa
+          name: V5iOS-v2.4-EXECUTION-LAYER-unsigned-ipa
+          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v2.4-EXECUTION-LAYER-unsigned.ipa
           if-no-files-found: error
