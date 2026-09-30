@@ -942,6 +942,64 @@ jobs:
           }
           }
           V5EOF02
+          mkdir -p "$(dirname 'V5iOS/UI/FolderPicker.swift')"
+          cat > 'V5iOS/UI/FolderPicker.swift' <<'V5PICKER'
+          import SwiftUI
+          import UIKit
+          import UniformTypeIdentifiers
+
+          struct FolderPicker: UIViewControllerRepresentable {
+          let onPick: (URL) -> Void
+
+          func makeCoordinator() -> Coordinator {
+          Coordinator(parent: self)
+          }
+
+          func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+          let exeType = UTType(filenameExtension: "exe") ?? .data
+
+          // Accept either a folder or an EXE directly. Selecting an EXE
+          // automatically passes its parent folder back to V5 Runtime Core.
+          let picker = UIDocumentPickerViewController(
+            forOpeningContentTypes: [.folder, exeType],
+            asCopy: false
+          )
+          picker.delegate = context.coordinator
+          picker.allowsMultipleSelection = false
+          picker.shouldShowFileExtensions = true
+          return picker
+          }
+
+          func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
+
+          final class Coordinator: NSObject, UIDocumentPickerDelegate {
+          let parent: FolderPicker
+
+          init(parent: FolderPicker) {
+            self.parent = parent
+          }
+
+          func documentPicker(
+            _ controller: UIDocumentPickerViewController,
+            didPickDocumentsAt urls: [URL]
+          ) {
+            guard let picked = urls.first else { return }
+
+            let isDirectory = (try? picked.resourceValues(
+                forKeys: [.isDirectoryKey]
+            ).isDirectory) ?? false
+
+            let folder = isDirectory ? picked : picked.deletingLastPathComponent()
+            parent.onPick(folder)
+            controller.dismiss(animated: true)
+          }
+
+          func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+            controller.dismiss(animated: true)
+          }
+          }
+          }
+          V5PICKER
           mkdir -p "$(dirname 'V5iOS/Core/GameFolderScanner.swift')"
           cat > 'V5iOS/Core/GameFolderScanner.swift' <<'V5EOF03'
           import Foundation
