@@ -1,4 +1,4 @@
-name: Build V5iOS v3.0 CPU Graphics Runtime IPA
+name: Build V5iOS v4.0 GTA Bring-up IPA
 
 on:
   workflow_dispatch:
@@ -272,12 +272,12 @@ jobs:
           		G00000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
           			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
           			CODE_SIGN_STYLE = Automatic;
-          			CURRENT_PROJECT_VERSION = 300;
+          			CURRENT_PROJECT_VERSION = 400;
           			GENERATE_INFOPLIST_FILE = NO;
           			INFOPLIST_FILE = V5iOS/Info.plist;
           			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
           			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-          			MARKETING_VERSION = 3.0;
+          			MARKETING_VERSION = 4.0;
           			PRODUCT_BUNDLE_IDENTIFIER = com.v5ios.launcher;
           			PRODUCT_NAME = "$(TARGET_NAME)";
           			SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -290,12 +290,12 @@ jobs:
           		G00000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
           			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
           			CODE_SIGN_STYLE = Automatic;
-          			CURRENT_PROJECT_VERSION = 300;
+          			CURRENT_PROJECT_VERSION = 400;
           			GENERATE_INFOPLIST_FILE = NO;
           			INFOPLIST_FILE = V5iOS/Info.plist;
           			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
           			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-          			MARKETING_VERSION = 3.0;
+          			MARKETING_VERSION = 4.0;
           			PRODUCT_BUNDLE_IDENTIFIER = com.v5ios.launcher;
           			PRODUCT_NAME = "$(TARGET_NAME)";
           			SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -344,13 +344,13 @@ jobs:
           	<key>CFBundlePackageType</key>
           	<string>APPL</string>
           	<key>CFBundleShortVersionString</key>
-          	<string>3.0</string>
+          	<string>4.0</string>
           	<key>CFBundleVersion</key>
-          	<string>300</string>
+          	<string>400</string>
           	<key>NSHumanReadableCopyright</key>
           	<string>© 2026 Ali Tahseen. All rights reserved.</string>
           	<key>CFBundleGetInfoString</key>
-          	<string>V5iOS v3.0 CPU + Graphics Runtime — Built by AELLE STORE • © 2026 Ali Tahseen</string>
+          	<string>V5iOS v4.0 GTA Bring-up — Built by AELLE STORE • © 2026 Ali Tahseen</string>
           	<key>LSRequiresIPhoneOS</key>
           	<true/>
           	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -499,7 +499,7 @@ jobs:
                     }
                     Text("Runtime Core")
                         .font(.headline)
-                    Text("Release 3.0 • V5 Runtime Foundation")
+                    Text("Release 4.0 • V5 Runtime Foundation")
                         .font(.caption.monospaced())
                         .foregroundColor(.secondary)
                 }
@@ -1144,8 +1144,25 @@ jobs:
           char status[256];
           } V5BlockDecodeResultC;
 
+          typedef struct {
+          int32_t success;
+          uint32_t instructionsExecuted;
+          uint32_t stackBytesReserved;
+          uint64_t initialRSP;
+          uint64_t finalRSP;
+          uint64_t returnAddress;
+          uint64_t nextRIP;
+          char status[256];
+          } V5EntryStepResultC;
+
           V5ABICallFrameC V5BuildABICallProbe(uint64_t thunkAddress);
           V5BlockDecodeResultC V5DecodeGuestBlock(const uint8_t* code, uint32_t size, uint64_t guestRIP);
+          V5EntryStepResultC V5ExecuteEntryPrefix(
+            const uint8_t* code,
+            uint32_t size,
+            uint64_t guestRIP,
+            uint64_t initialRSP
+          );
 
           #ifdef __cplusplus
           }
@@ -1268,6 +1285,62 @@ jobs:
           frame.r9 = 44;
           frame.rsp = 0x0000000100000000ULL;
           return frame;
+          }
+
+          V5EntryStepResultC V5ExecuteEntryPrefix(
+            const uint8_t* code,
+            uint32_t size,
+            uint64_t guestRIP,
+            uint64_t initialRSP
+          ) {
+          V5EntryStepResultC out{};
+          out.initialRSP = initialRSP;
+          out.finalRSP = initialRSP;
+
+          if (!code || size < 9) {
+            std::strncpy(out.status, "Entry buffer is too small for GTA bring-up", sizeof(out.status)-1);
+            return out;
+          }
+
+          size_t ip = 0;
+
+          // GTA V entry currently starts with:
+          //   48 83 EC xx    sub rsp, imm8
+          if (code[ip] == 0x48 && code[ip+1] == 0x83 && code[ip+2] == 0xEC) {
+            const uint8_t reserve = code[ip+3];
+            out.stackBytesReserved = reserve;
+            out.finalRSP -= (uint64_t)reserve;
+            out.instructionsExecuted += 1;
+            ip += 4;
+          } else {
+            std::strncpy(out.status, "Entry prefix is not the expected Win64 SUB RSP prologue", sizeof(out.status)-1);
+            return out;
+          }
+
+          // Follow the first direct CALL rel32 and model the Win64 return-address push.
+          if (ip + 5 <= size && code[ip] == 0xE8) {
+            const int32_t rel = (int32_t)readU32(code + ip + 1);
+            const uint64_t returnAddress = guestRIP + (uint64_t)ip + 5ULL;
+            const uint64_t target = (uint64_t)((int64_t)returnAddress + (int64_t)rel);
+
+            out.finalRSP -= 8ULL;
+            out.returnAddress = returnAddress;
+            out.nextRIP = target;
+            out.instructionsExecuted += 1;
+            out.success = 1;
+
+            std::strncpy(
+              out.status,
+              "GTA entry interpreter executed SUB RSP and CALL rel32 semantics",
+              sizeof(out.status)-1
+            );
+            out.status[sizeof(out.status)-1] = '\0';
+            return out;
+          }
+
+          std::strncpy(out.status, "Entry prologue decoded, but first CALL rel32 was not found", sizeof(out.status)-1);
+          out.status[sizeof(out.status)-1] = '\0';
+          return out;
           }
 
           V5BlockDecodeResultC V5DecodeGuestBlock(const uint8_t* code, uint32_t size, uint64_t guestRIP) {
@@ -2488,6 +2561,157 @@ jobs:
           }
           }
           V5CPUGFX
+          cat >> 'V5iOS/Runtime/PE/PEImage.swift' <<'V5BRINGUP'
+          struct V5GTABringUpResult {
+          let success: Bool
+          let entryInterpreterPassed: Bool
+          let instructionsExecuted: Int
+          let stackBytesReserved: Int
+          let initialRSP: UInt64
+          let finalRSP: UInt64
+          let returnAddress: UInt64
+          let nextRIP: UInt64
+          let targetMapped: Bool
+          let targetDecodedInstructions: Int
+          let targetBytesConsumed: Int
+          let targetPreview: String
+          let targetHitUnsupportedOpcode: Bool
+          let jitReady: Bool
+          let jitStatus: String
+          let status: String
+          }
+
+          enum V5GTABringUpProbe {
+          static func run(url: URL, info: PEImageInfo) -> V5GTABringUpResult {
+          let initialRSP: UInt64 = 0x0000000200000000
+          var interpreterPassed = false
+          var executed = 0
+          var reserved = 0
+          var finalRSP = initialRSP
+          var returnAddress: UInt64 = 0
+          var nextRIP: UInt64 = 0
+          var targetMapped = false
+          var targetDecoded = 0
+          var targetConsumed = 0
+          var targetPreview = "Unavailable"
+          var targetUnsupported = false
+
+          do {
+            let data = try Data(contentsOf:url, options:[.mappedIfSafe])
+
+            guard let entryOffset = fileOffset(forRVA:info.entryPointRVA, sections:info.sections),
+                  entryOffset < data.count else {
+              throw NSError(
+                domain:"V5BringUp",
+                code:1,
+                userInfo:[NSLocalizedDescriptionKey:"Could not map GTA entry RVA to file bytes."]
+              )
+            }
+
+            let entryCount = min(64, data.count-entryOffset)
+            let entryData = data.subdata(in:entryOffset..<(entryOffset+entryCount))
+            let guestRIP = info.imageBase &+ UInt64(info.entryPointRVA)
+
+            let step: V5EntryStepResultC = entryData.withUnsafeBytes { raw in
+              V5ExecuteEntryPrefix(
+                raw.bindMemory(to:UInt8.self).baseAddress,
+                UInt32(entryData.count),
+                guestRIP,
+                initialRSP
+              )
+            }
+
+            interpreterPassed = step.success != 0
+            executed = Int(step.instructionsExecuted)
+            reserved = Int(step.stackBytesReserved)
+            finalRSP = step.finalRSP
+            returnAddress = step.returnAddress
+            nextRIP = step.nextRIP
+
+            if interpreterPassed,
+               nextRIP >= info.imageBase {
+              let targetRVA64 = nextRIP - info.imageBase
+              if targetRVA64 <= UInt64(UInt32.max) {
+                let targetRVA = UInt32(targetRVA64)
+
+                if let targetOffset = fileOffset(forRVA:targetRVA,sections:info.sections),
+                   targetOffset < data.count {
+                  targetMapped = true
+                  let count = min(64,data.count-targetOffset)
+                  let target = data.subdata(in:targetOffset..<(targetOffset+count))
+                  targetPreview = target.prefix(24)
+                    .map { String(format:"%02X",$0) }
+                    .joined(separator:" ")
+
+                  let decode: V5BlockDecodeResultC = target.withUnsafeBytes { raw in
+                    V5DecodeGuestBlock(
+                      raw.bindMemory(to:UInt8.self).baseAddress,
+                      UInt32(target.count),
+                      nextRIP
+                    )
+                  }
+
+                  targetDecoded = Int(decode.decodedInstructions)
+                  targetConsumed = Int(decode.bytesConsumed)
+                  targetUnsupported = decode.hitUnsupportedOpcode != 0
+                }
+              }
+            }
+          } catch {
+            targetPreview = "Bring-up error: \(error.localizedDescription)"
+          }
+
+          let jit = JITCapability.probe()
+          let jitReady = jit.allowJITEntitlement || jit.getTaskAllow
+
+          // PASS here means the final-phase bring-up harness is genuinely
+          // executing the first two GTA entry instructions and following its
+          // first control-flow edge. It does NOT mean GTA V gameplay runs.
+          let pass = interpreterPassed && targetMapped
+
+          let status: String
+          if pass {
+            if jitReady {
+              status = "GTA ENTRY BRING-UP PASS • first guest control-flow edge executed • JIT path available"
+            } else {
+              status = "GTA ENTRY BRING-UP PASS • interpreter executed the real entry prefix • JIT remains the full-speed execution gate"
+            }
+          } else {
+            status = "GTA entry bring-up is partial"
+          }
+
+          return .init(
+            success:pass,
+            entryInterpreterPassed:interpreterPassed,
+            instructionsExecuted:executed,
+            stackBytesReserved:reserved,
+            initialRSP:initialRSP,
+            finalRSP:finalRSP,
+            returnAddress:returnAddress,
+            nextRIP:nextRIP,
+            targetMapped:targetMapped,
+            targetDecodedInstructions:targetDecoded,
+            targetBytesConsumed:targetConsumed,
+            targetPreview:targetPreview,
+            targetHitUnsupportedOpcode:targetUnsupported,
+            jitReady:jitReady,
+            jitStatus:jit.status,
+            status:status
+          )
+          }
+
+          private static func fileOffset(forRVA rva:UInt32,sections:[PESection]) -> Int? {
+          for section in sections {
+            let span = max(section.virtualSize,section.rawSize)
+            if rva >= section.virtualAddress &&
+               rva < section.virtualAddress &+ span {
+              return Int(section.rawOffset &+ (rva-section.virtualAddress))
+            }
+          }
+          return nil
+          }
+          }
+          V5BRINGUP
           mkdir -p "$(dirname 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift')"
           cat > 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift' <<'V5EOF09'
           import Foundation
@@ -2774,6 +2998,7 @@ jobs:
           @Published var winAPIBindResult: V5WinAPIBindResult?
           @Published var executionResult: V5ExecutionProbeResult?
           @Published var cpuGraphicsResult: V5CPUGraphicsRuntimeResult?
+          @Published var gtaBringUpResult: V5GTABringUpResult?
           @Published var stages: [V5RuntimeStage] = []
           @Published var logLines: [String] = []
           @Published var busy = false
@@ -2800,6 +3025,7 @@ jobs:
           winAPIBindResult = nil
           executionResult = nil
           cpuGraphicsResult = nil
+          gtaBringUpResult = nil
           executableURL = exe
           selectedFolder = exe.deletingLastPathComponent()
           append("Inspecting imported executable \(exe.lastPathComponent)…")
@@ -2993,6 +3219,35 @@ jobs:
           append(r.status)
           }
 
+          func runGTABringUpProbe() {
+          guard let exe = executableURL,
+                let info = peInfo,
+                cpuGraphicsResult?.success == true else {
+            stages.append(.init(
+              name:"GTA bring-up",
+              passed:false,
+              detail:"Run and pass CPU + Graphics Runtime first."
+            ))
+            append("GTA bring-up requires CPU + Graphics Runtime PASS")
+            return
+          }
+
+          busy = true
+          gtaBringUpResult = nil
+          stages.removeAll(where: { $0.name == "GTA bring-up" })
+          append("Executing real GTA entry-prefix semantics and following first CALL target…")
+          defer { busy = false }
+
+          let result = V5GTABringUpProbe.run(url:exe,info:info)
+          gtaBringUpResult = result
+          stages.append(.init(
+            name:"GTA bring-up",
+            passed:result.success,
+            detail:"\(result.instructionsExecuted) entry instructions • target \(result.targetMapped ? "mapped" : "not mapped") • JIT \(result.jitReady ? "ready" : "gate")"
+          ))
+          append(result.status)
+          }
+
           func runFoundationDiagnostics() {
           busy = true
           stages.removeAll(where: { ["V5CPU core", "Metal pipeline", "Guest memory", "JIT capability"].contains($0.name) })
@@ -3047,7 +3302,7 @@ jobs:
                     VStack(alignment: .leading, spacing: 4) {
                         Text("V5 Runtime Core")
                             .font(.system(size: 30, weight: .bold, design: .rounded))
-                        Text("Internal compatibility engine • CPU + Graphics Runtime build 3.0")
+                        Text("Internal compatibility engine • GTA Bring-up Final Phase build 4.0")
                             .foregroundColor(.secondary)
                     }
 
@@ -3319,6 +3574,68 @@ jobs:
                         }
                     }
 
+                    if runtime.cpuGraphicsResult?.success == true {
+                        card {
+                            Label("V5 GTA Bring-up • Final Phase", systemImage:"flag.checkered")
+                                .font(.headline)
+                                .foregroundColor(gold)
+
+                            Button {
+                                runtime.runGTABringUpProbe()
+                            } label: {
+                                Label(
+                                  runtime.gtaBringUpResult == nil
+                                    ? "Run GTA Entry Bring-up"
+                                    : "Re-run GTA Entry Bring-up",
+                                  systemImage:"forward.end.circle.fill"
+                                )
+                                .frame(maxWidth:.infinity)
+                                .padding(.vertical,8)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(green)
+                            .disabled(runtime.busy)
+
+                            if let result = runtime.gtaBringUpResult {
+                                row("Entry Interpreter", result.entryInterpreterPassed ? "PASS" : "FAIL")
+                                row("Guest Instructions", "\(result.instructionsExecuted)")
+                                row("Stack Reserve", "0x\(String(result.stackBytesReserved,radix:16).uppercased())")
+                                row("Initial RSP", "0x\(String(result.initialRSP,radix:16).uppercased())")
+                                row("RSP After CALL", "0x\(String(result.finalRSP,radix:16).uppercased())")
+                                if result.returnAddress != 0 {
+                                    row("Return Address", "0x\(String(result.returnAddress,radix:16).uppercased())")
+                                }
+                                if result.nextRIP != 0 {
+                                    row("Next RIP", "0x\(String(result.nextRIP,radix:16).uppercased())")
+                                }
+                                row("CALL Target", result.targetMapped ? "MAPPED" : "NOT MAPPED")
+                                row("Target Decoder", "\(result.targetDecodedInstructions) instructions / \(result.targetBytesConsumed) bytes")
+                                row("JIT Gate", result.jitReady ? "READY" : "NOT ENABLED")
+
+                                Text("Target bytes: \(result.targetPreview)")
+                                    .font(.caption2.monospaced())
+                                    .foregroundColor(.secondary)
+                                    .textSelection(.enabled)
+
+                                if result.targetHitUnsupportedOpcode {
+                                    Text("Target trace reached an x86-64 opcode not implemented by the current foundation decoder. This is the next CPU-compatibility blocker to implement.")
+                                        .font(.caption)
+                                        .foregroundColor(.orange)
+                                }
+
+                                Text(result.status)
+                                    .font(.caption.bold())
+                                    .foregroundColor(result.success ? green : .orange)
+
+                                if !result.jitReady {
+                                    Text("Important: the interpreter can continue bring-up work without JIT, but playable full-speed GTA V still requires an authorized iOS JIT path or a substantially larger interpreter/translator. No protection bypass is included.")
+                                        .font(.caption)
+                                        .foregroundColor(.orange)
+                                }
+                            }
+                        }
+                    }
+
                     card {
                         Button {
                             runtime.runFoundationDiagnostics()
@@ -3357,7 +3674,7 @@ jobs:
                                 .font(.caption.monospaced().bold())
                                 .foregroundColor(runtime.foundationReady ? green : .secondary)
                         }
-                        Text("Current milestone: real GTA entry-block decoding + Metal runtime integration. Next: JIT-enabled dynamic execution and GTA V bring-up/final compatibility work. No DRM bypass is included.")
+                        Text("Final phase: real GTA entry semantics + control-flow bring-up. Remaining runtime blockers are surfaced directly by the trace; full-speed execution still depends on JIT or a much broader translator. No DRM bypass is included.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -3485,7 +3802,7 @@ jobs:
           echo "MVK_LIB=$MVK_LIB" >> "$GITHUB_ENV"
           echo "MVK_INCLUDE=$MVK_INCLUDE" >> "$GITHUB_ENV"
 
-      - name: Build V5iOS v3.0 CPU Graphics Runtime
+      - name: Build V5iOS v4.0 GTA Bring-up
         run: |
           cd V5iOS-v2.0-RUNTIME-CORE
           xcodebuild \
@@ -3508,14 +3825,14 @@ jobs:
           cd V5iOS-v2.0-RUNTIME-CORE
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -print -quit)
           test -n "$APP"
-          rm -rf Payload V5iOS-v3.0-CPU-GRAPHICS-RUNTIME-unsigned.ipa
+          rm -rf Payload V5iOS-v4.0-GTA-BRINGUP-unsigned.ipa
           mkdir Payload
           cp -R "$APP" Payload/
-          zip -qry V5iOS-v3.0-CPU-GRAPHICS-RUNTIME-unsigned.ipa Payload
+          zip -qry V5iOS-v4.0-GTA-BRINGUP-unsigned.ipa Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: V5iOS-v3.0-CPU-GRAPHICS-RUNTIME-unsigned-ipa
-          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v3.0-CPU-GRAPHICS-RUNTIME-unsigned.ipa
+          name: V5iOS-v4.0-GTA-BRINGUP-unsigned-ipa
+          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v4.0-GTA-BRINGUP-unsigned.ipa
           if-no-files-found: error
