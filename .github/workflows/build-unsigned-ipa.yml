@@ -499,7 +499,7 @@ jobs:
                     }
                     Text("Runtime Core")
                         .font(.headline)
-                    Text("Release 2.0 • V5 Runtime Foundation")
+                    Text("Release 2.1 • V5 Runtime Foundation")
                         .font(.caption.monospaced())
                         .foregroundColor(.secondary)
                 }
@@ -1444,6 +1444,81 @@ jobs:
           }
           }
           V5EOF08
+          mkdir -p "$(dirname 'V5iOS/Runtime/PE/PEImageMapper.swift')"
+          cat > 'V5iOS/Runtime/PE/PEImageMapper.swift' <<'V5MAP'
+          import Foundation
+
+          struct PEMapResult {
+          let success: Bool
+          let imageBytes: Int
+          let headerBytes: Int
+          let sectionsMapped: Int
+          let entryOffset: Int
+          let entryPreview: String
+          }
+
+          enum PEMapError: Error, LocalizedError {
+          case invalidImageSize
+          case malformed(String)
+          var errorDescription: String? {
+          switch self {
+          case .invalidImageSize: return "Invalid or unsafe PE image size."
+          case .malformed(let s): return s
+          }
+          }
+          }
+
+          enum PEImageMapper {
+          static func map(url: URL, info: PEImageInfo) throws -> PEMapResult {
+          let file = try Data(contentsOf: url, options: [.mappedIfSafe])
+          let imageSize = Int(info.imageSize)
+          guard imageSize > 0, imageSize <= 512 * 1024 * 1024 else { throw PEMapError.invalidImageSize }
+          var image = Data(count: imageSize)
+          guard file.count >= 0x40 else { throw PEMapError.malformed("PE file is truncated.") }
+
+          let pe = Int(try u32(file, 0x3C))
+          guard pe + 24 <= file.count else { throw PEMapError.malformed("PE header outside file.") }
+          let optionalSize = Int(try u16(file, pe + 4 + 16))
+          let optional = pe + 4 + 20
+          guard optional + optionalSize <= file.count else { throw PEMapError.malformed("Optional header truncated.") }
+
+          let sizeOfHeaders = Int(try u32(file, optional + 60))
+          let headerBytes = min(sizeOfHeaders, min(file.count, image.count))
+          if headerBytes > 0 { image.replaceSubrange(0..<headerBytes, with: file[0..<headerBytes]) }
+
+          var mapped = 0
+          for s in info.sections {
+            let src = Int(s.rawOffset), requested = Int(s.rawSize), dst = Int(s.virtualAddress)
+            if requested == 0 { continue }
+            guard src >= 0, dst >= 0, src < file.count, dst < image.count else {
+              throw PEMapError.malformed("Section \(s.name) is outside image bounds.")
+            }
+            let count = min(requested, min(file.count-src, image.count-dst))
+            if count > 0 {
+              image.replaceSubrange(dst..<(dst+count), with: file[src..<(src+count)])
+              mapped += 1
+            }
+          }
+
+          let entry = Int(info.entryPointRVA)
+          guard entry >= 0, entry < image.count else { throw PEMapError.malformed("Entry RVA outside mapped image.") }
+          let n = min(16, image.count-entry)
+          let preview = image[entry..<(entry+n)].map { String(format:"%02X",$0) }.joined(separator:" ")
+          return .init(success:true,imageBytes:image.count,headerBytes:headerBytes,sectionsMapped:mapped,entryOffset:entry,entryPreview:preview)
+          }
+
+          private static func u16(_ d: Data,_ o:Int)throws->UInt16 {
+          guard o>=0,o+2<=d.count else { throw PEMapError.malformed("PE read outside file.") }
+          return UInt16(d[d.index(d.startIndex,offsetBy:o)]) | (UInt16(d[d.index(d.startIndex,offsetBy:o+1)])<<8)
+          }
+          private static func u32(_ d: Data,_ o:Int)throws->UInt32 {
+          guard o>=0,o+4<=d.count else { throw PEMapError.malformed("PE read outside file.") }
+          var v:UInt32=0
+          for i in 0..<4 { v |= UInt32(d[d.index(d.startIndex,offsetBy:o+i)]) << UInt32(i*8) }
+          return v
+          }
+          }
+          V5MAP
           mkdir -p "$(dirname 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift')"
           cat > 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift' <<'V5EOF09'
           import Foundation
@@ -1620,6 +1695,7 @@ jobs:
           @Published var selectedFolder: URL?
           @Published var executableURL: URL?
           @Published var peInfo: PEImageInfo?
+          @Published var mapResult: PEMapResult?
           @Published var stages: [V5RuntimeStage] = []
           @Published var logLines: [String] = []
           @Published var busy = false
@@ -1641,6 +1717,7 @@ jobs:
           busy = true
           stages = []
           peInfo = nil
+          mapResult = nil
           executableURL = exe
           selectedFolder = exe.deletingLastPathComponent()
           append("Inspecting imported executable \(exe.lastPathComponent)…")
@@ -1711,6 +1788,27 @@ jobs:
           }
           }
 
+          func mapExecutableImage() {
+          guard let exe = executableURL, let info = peInfo else {
+            stages.append(.init(name:"PE image mapper",passed:false,detail:"Choose and parse an x86-64 EXE first."))
+            return
+          }
+          busy=true
+          mapResult=nil
+          stages.removeAll(where:{$0.name=="PE image mapper"})
+          append("Mapping \(exe.lastPathComponent) into V5 guest image…")
+          defer { busy=false }
+          do {
+            let r=try PEImageMapper.map(url:exe,info:info)
+            mapResult=r
+            stages.append(.init(name:"PE image mapper",passed:true,detail:"\(r.sectionsMapped) sections • \(r.imageBytes/1_048_576) MB • entry mapped"))
+            append("PE mapper PASS: \(r.sectionsMapped) sections • entry \(r.entryPreview)")
+          } catch {
+            stages.append(.init(name:"PE image mapper",passed:false,detail:error.localizedDescription))
+            append("PE mapper failed: \(error.localizedDescription)")
+          }
+          }
+
           func runFoundationDiagnostics() {
           busy = true
           stages.removeAll(where: { ["V5CPU core", "Metal pipeline", "Guest memory", "JIT capability"].contains($0.name) })
@@ -1765,7 +1863,7 @@ jobs:
                     VStack(alignment: .leading, spacing: 4) {
                         Text("V5 Runtime Core")
                             .font(.system(size: 30, weight: .bold, design: .rounded))
-                        Text("Internal compatibility engine • Foundation build 2.0")
+                        Text("Internal compatibility engine • PE Mapper build 2.1")
                             .foregroundColor(.secondary)
                     }
 
@@ -1820,6 +1918,34 @@ jobs:
                         }
                     }
 
+                    if runtime.peInfo != nil {
+                        card {
+                            Label("V5 PE Mapper", systemImage: "memorychip.fill")
+                                .font(.headline)
+                                .foregroundColor(gold)
+                            Button {
+                                runtime.mapExecutableImage()
+                            } label: {
+                                Label(runtime.mapResult == nil ? "Map EXE Into Guest Memory" : "Re-map EXE Image", systemImage: "arrow.down.to.line.compact")
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(green)
+                            .disabled(runtime.busy)
+                            if let m = runtime.mapResult {
+                                row("Mapped Image", String(format: "%.1f MB", Double(m.imageBytes)/1_048_576.0))
+                                row("Headers", "\(m.headerBytes) bytes")
+                                row("Sections Mapped", "\(m.sectionsMapped)")
+                                row("Entry Offset", "0x\(String(m.entryOffset,radix:16).uppercased())")
+                                Text("Entry bytes: \(m.entryPreview)")
+                                    .font(.caption.monospaced())
+                                    .foregroundColor(.secondary)
+                                    .textSelection(.enabled)
+                            }
+                        }
+                    }
+
                     card {
                         Button {
                             runtime.runFoundationDiagnostics()
@@ -1858,7 +1984,7 @@ jobs:
                                 .font(.caption.monospaced().bold())
                                 .foregroundColor(runtime.foundationReady ? green : .secondary)
                         }
-                        Text("Next engine milestone: executable image mapping, import thunk resolution, Win64 ABI bridge, then JIT translation blocks. No DRM bypass is included.")
+                        Text("Current milestone: PE image mapping. Next: relocations, import thunk resolution, Win64 ABI bridge, then JIT translation blocks. No DRM bypass is included.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
