@@ -23,7 +23,7 @@ jobs:
           mkdir -p upstream
 
           curl -fL --retry 5 --retry-delay 3 \
-            "https://nightly.link/Makaria122/Madeira-IPA/workflows/build.yml/main/Madeira-unsigned.zip" \
+            "https://nightly.link/Makaria122/Madeira-IPA/workflows/build/main/Madeira-unsigned.zip" \
             -o /tmp/madeira-artifact.zip
 
           unzip -q /tmp/madeira-artifact.zip -d upstream
