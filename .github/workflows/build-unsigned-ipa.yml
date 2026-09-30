@@ -446,8 +446,13 @@ jobs:
           .preferredColorScheme(.dark)
           .sheet(isPresented: $showFolderPicker) {
             FolderPicker { url in
-                scanResult = GameFolderScanner.scan(url: url)
-                runtime.select(folder: url)
+                if url.pathExtension.lowercased() == "exe" {
+                    scanResult = nil
+                    runtime.selectExecutable(url)
+                } else {
+                    scanResult = GameFolderScanner.scan(url: url)
+                    runtime.select(folder: url)
+                }
                 showFolderPicker = false
             }
           }
@@ -956,13 +961,12 @@ jobs:
           }
 
           func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-          let exeType = UTType(filenameExtension: "exe") ?? .data
-
-          // Accept either a folder or an EXE directly. Selecting an EXE
-          // automatically passes its parent folder back to V5 Runtime Core.
+          // For the PE64 test we import a file directly instead of trying to
+          // select its parent folder. asCopy=true gives V5iOS its own readable
+          // copy, avoiding provider/security-scope problems on iOS Files.
           let picker = UIDocumentPickerViewController(
-            forOpeningContentTypes: [.folder, exeType],
-            asCopy: false
+            forOpeningContentTypes: [.data],
+            asCopy: true
           )
           picker.delegate = context.coordinator
           picker.allowsMultipleSelection = false
@@ -984,19 +988,10 @@ jobs:
             didPickDocumentsAt urls: [URL]
           ) {
             guard let picked = urls.first else { return }
-
-            let isDirectory = (try? picked.resourceValues(
-                forKeys: [.isDirectoryKey]
-            ).isDirectory) ?? false
-
-            let folder = isDirectory ? picked : picked.deletingLastPathComponent()
-            parent.onPick(folder)
-            controller.dismiss(animated: true)
+            parent.onPick(picked)
           }
 
-          func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            controller.dismiss(animated: true)
-          }
+          func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {}
           }
           }
           V5PICKER
@@ -1642,6 +1637,39 @@ jobs:
           inspectSelectedFolder()
           }
 
+          func selectExecutable(_ exe: URL) {
+          busy = true
+          stages = []
+          peInfo = nil
+          executableURL = exe
+          selectedFolder = exe.deletingLastPathComponent()
+          append("Inspecting imported executable \(exe.lastPathComponent)…")
+
+          defer { busy = false }
+
+          guard exe.pathExtension.lowercased() == "exe" else {
+            stages.append(.init(name: "Executable", passed: false, detail: "Select a Windows .exe file."))
+            append("Selected file is not an EXE")
+            return
+          }
+
+          stages.append(.init(name: "Game executable", passed: true, detail: exe.lastPathComponent))
+
+          do {
+            let info = try PEParser.parse(url: exe)
+            peInfo = info
+            stages.append(.init(
+                name: "PE64 loader",
+                passed: info.isAMD64,
+                detail: "\(info.machineName), \(info.numberOfSections) sections, \(info.importedDLLs.count) imported DLLs"
+            ))
+            append("PE parsed: entry RVA 0x\(String(info.entryPointRVA, radix: 16)), image base 0x\(String(info.imageBase, radix: 16))")
+          } catch {
+            stages.append(.init(name: "PE64 loader", passed: false, detail: error.localizedDescription))
+            append("PE parse failed: \(error.localizedDescription)")
+          }
+          }
+
           func inspectSelectedFolder() {
           guard let folder = selectedFolder else { return }
           busy = true
@@ -1757,17 +1785,16 @@ jobs:
                         Button {
                             showFolderPicker = true
                         } label: {
-                            Label(runtime.selectedFolder == nil ? "Choose GTA V Folder" : "Change GTA V Folder", systemImage: "folder.badge.plus")
+                            Label(runtime.executableURL == nil ? "Choose EXE File" : "Change EXE File", systemImage: "doc.badge.plus")
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(green)
 
-                        if let folder = runtime.selectedFolder {
-                            row("Folder", folder.lastPathComponent)
-                            Button("Inspect GTA5.exe") { runtime.inspectSelectedFolder() }
-                                .buttonStyle(.bordered)
+                        if let exe = runtime.executableURL {
+                            row("Executable", exe.lastPathComponent)
+                            if let folder = runtime.selectedFolder { row("Imported To", folder.lastPathComponent) }
                         }
                     }
 
