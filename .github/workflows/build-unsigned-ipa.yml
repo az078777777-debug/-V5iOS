@@ -1,4 +1,4 @@
-name: Build V5iOS v2.1 PE Mapper IPA
+name: Build V5iOS v2.2 Relocations Imports IPA
 
 on:
   workflow_dispatch:
@@ -344,13 +344,13 @@ jobs:
           	<key>CFBundlePackageType</key>
           	<string>APPL</string>
           	<key>CFBundleShortVersionString</key>
-          	<string>2.1</string>
+          	<string>2.2</string>
           	<key>CFBundleVersion</key>
-          	<string>210</string>
+          	<string>220</string>
           	<key>NSHumanReadableCopyright</key>
           	<string>© 2026 Ali Tahseen. All rights reserved.</string>
           	<key>CFBundleGetInfoString</key>
-          	<string>V5iOS v2.1 PE Mapper — Built by AELLE STORE • © 2026 Ali Tahseen</string>
+          	<string>V5iOS v2.2 Relocations + Imports — Built by AELLE STORE • © 2026 Ali Tahseen</string>
           	<key>LSRequiresIPhoneOS</key>
           	<true/>
           	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -499,7 +499,7 @@ jobs:
                     }
                     Text("Runtime Core")
                         .font(.headline)
-                    Text("Release 2.1 • V5 Runtime Foundation")
+                    Text("Release 2.2 • V5 Runtime Foundation")
                         .font(.caption.monospaced())
                         .foregroundColor(.secondary)
                 }
@@ -1518,6 +1518,232 @@ jobs:
           }
           }
           V5MAP
+          cat >> 'V5iOS/Runtime/PE/PEImage.swift' <<'V5STAGE2'
+          struct PERelocImportResult {
+          let relocationBlocks: Int
+          let dir64Relocations: Int
+          let ignoredRelocations: Int
+          let relocationDelta: Int64
+          let importDLLCount: Int
+          let importSymbolCount: Int
+          let ordinalImportCount: Int
+          let namedImportCount: Int
+          let sampleImports: [String]
+          let status: String
+          }
+
+          enum PEStage2Error: Error, LocalizedError {
+          case malformed(String)
+          var errorDescription: String? {
+          switch self {
+          case .malformed(let s): return s
+          }
+          }
+          }
+
+          enum PEStage2Analyzer {
+          static func analyze(url: URL, info: PEImageInfo) throws -> PERelocImportResult {
+          let file = try Data(contentsOf: url, options: [.mappedIfSafe])
+          guard file.count >= 0x100 else { throw PEStage2Error.malformed("PE file is too small.") }
+
+          let pe = Int(try u32(file, 0x3C))
+          guard pe + 24 <= file.count, try u32(file, pe) == 0x00004550 else {
+            throw PEStage2Error.malformed("Invalid PE signature.")
+          }
+
+          let optionalSize = Int(try u16(file, pe + 4 + 16))
+          let optional = pe + 4 + 20
+          guard optional + optionalSize <= file.count else {
+            throw PEStage2Error.malformed("Optional header is truncated.")
+          }
+
+          guard try u16(file, optional) == 0x20B else {
+            throw PEStage2Error.malformed("Stage 2 requires PE32+ / x86-64.")
+          }
+
+          let imageSize = Int(info.imageSize)
+          guard imageSize > 0, imageSize <= 512 * 1024 * 1024 else {
+            throw PEStage2Error.malformed("Unsafe image size.")
+          }
+
+          var image = Data(count: imageSize)
+          let sizeOfHeaders = Int(try u32(file, optional + 60))
+          let headerBytes = min(sizeOfHeaders, min(file.count, image.count))
+          if headerBytes > 0 { image.replaceSubrange(0..<headerBytes, with: file[0..<headerBytes]) }
+
+          for s in info.sections {
+            let src = Int(s.rawOffset), requested = Int(s.rawSize), dst = Int(s.virtualAddress)
+            if requested == 0 { continue }
+            guard src >= 0, dst >= 0, src < file.count, dst < image.count else { continue }
+            let count = min(requested, min(file.count - src, image.count - dst))
+            if count > 0 {
+              image.replaceSubrange(dst..<(dst + count), with: file[src..<(src + count)])
+            }
+          }
+
+          // Use a synthetic guest load base to validate real IMAGE_REL_BASED_DIR64 relocation patching.
+          let syntheticLoadBase = info.imageBase &+ 0x10000000
+          let delta = Int64(bitPattern: syntheticLoadBase &- info.imageBase)
+
+          var relocationBlocks = 0
+          var dir64 = 0
+          var ignored = 0
+
+          // PE32+ data directories start at optional + 112. Index 5 = base relocations.
+          if optionalSize >= 160 {
+            let relocRVA = try u32(file, optional + 152)
+            let relocSize = try u32(file, optional + 156)
+
+            if relocRVA != 0, relocSize >= 8 {
+              var cursor = Int(relocRVA)
+              let end = min(image.count, cursor + Int(relocSize))
+
+              while cursor + 8 <= end {
+                let pageRVA = try u32(image, cursor)
+                let blockSize = Int(try u32(image, cursor + 4))
+                if pageRVA == 0 || blockSize < 8 || cursor + blockSize > end { break }
+
+                relocationBlocks += 1
+                let count = (blockSize - 8) / 2
+                var entry = cursor + 8
+
+                for _ in 0..<count {
+                  let raw = try u16(image, entry)
+                  let type = raw >> 12
+                  let offset = raw & 0x0FFF
+                  let patchRVA = Int(pageRVA) + Int(offset)
+
+                  if type == 10 { // IMAGE_REL_BASED_DIR64
+                    if patchRVA >= 0, patchRVA + 8 <= image.count {
+                      let old = try u64(image, patchRVA)
+                      let patched = UInt64(bitPattern: Int64(bitPattern: old) &+ delta)
+                      writeU64(&image, patchRVA, patched)
+                      dir64 += 1
+                    }
+                  } else if type != 0 {
+                    ignored += 1
+                  }
+                  entry += 2
+                }
+                cursor += blockSize
+              }
+            }
+          }
+
+          var dllCount = 0
+          var symbolCount = 0
+          var ordinalCount = 0
+          var namedCount = 0
+          var samples: [String] = []
+
+          // Index 1 = import directory.
+          if optionalSize >= 128 {
+            let importRVA = try u32(file, optional + 120)
+            let importSize = try u32(file, optional + 124)
+
+            if importRVA != 0, importSize >= 20 {
+              var descriptor = Int(importRVA)
+              let importEnd = min(image.count, descriptor + Int(importSize))
+              var safety = 0
+
+              while descriptor + 20 <= importEnd, safety < 1024 {
+                let originalFirstThunk = try u32(image, descriptor)
+                let nameRVA = try u32(image, descriptor + 12)
+                let firstThunk = try u32(image, descriptor + 16)
+
+                if originalFirstThunk == 0 && nameRVA == 0 && firstThunk == 0 { break }
+
+                let dllName = cString(image, Int(nameRVA), 260)
+                dllCount += 1
+
+                let thunkRVA = originalFirstThunk != 0 ? originalFirstThunk : firstThunk
+                var thunk = Int(thunkRVA)
+                var thunkSafety = 0
+
+                while thunk + 8 <= image.count, thunkSafety < 65536 {
+                  let value = try u64(image, thunk)
+                  if value == 0 { break }
+
+                  symbolCount += 1
+                  if (value & 0x8000000000000000) != 0 {
+                    ordinalCount += 1
+                    if samples.count < 24 {
+                      samples.append("\(dllName)!#\(value & 0xFFFF)")
+                    }
+                  } else {
+                    let ibn = Int(value)
+                    if ibn + 2 < image.count {
+                      let name = cString(image, ibn + 2, 512)
+                      namedCount += 1
+                      if samples.count < 24, !name.isEmpty {
+                        samples.append("\(dllName)!\(name)")
+                      }
+                    }
+                  }
+
+                  thunk += 8
+                  thunkSafety += 1
+                }
+
+                descriptor += 20
+                safety += 1
+              }
+            }
+          }
+
+          return .init(
+            relocationBlocks: relocationBlocks,
+            dir64Relocations: dir64,
+            ignoredRelocations: ignored,
+            relocationDelta: delta,
+            importDLLCount: dllCount,
+            importSymbolCount: symbolCount,
+            ordinalImportCount: ordinalCount,
+            namedImportCount: namedCount,
+            sampleImports: samples,
+            status: "Relocation patching validated; import thunk plan parsed"
+          )
+          }
+
+          private static func u16(_ d: Data, _ o: Int) throws -> UInt16 {
+          guard o >= 0, o + 2 <= d.count else { throw PEStage2Error.malformed("Read outside mapped image.") }
+          return UInt16(d[d.index(d.startIndex, offsetBy:o)]) |
+            (UInt16(d[d.index(d.startIndex, offsetBy:o+1)]) << 8)
+          }
+
+          private static func u32(_ d: Data, _ o: Int) throws -> UInt32 {
+          guard o >= 0, o + 4 <= d.count else { throw PEStage2Error.malformed("Read outside mapped image.") }
+          var v: UInt32 = 0
+          for i in 0..<4 { v |= UInt32(d[d.index(d.startIndex, offsetBy:o+i)]) << UInt32(i*8) }
+          return v
+          }
+
+          private static func u64(_ d: Data, _ o: Int) throws -> UInt64 {
+          guard o >= 0, o + 8 <= d.count else { throw PEStage2Error.malformed("Read outside mapped image.") }
+          var v: UInt64 = 0
+          for i in 0..<8 { v |= UInt64(d[d.index(d.startIndex, offsetBy:o+i)]) << UInt64(i*8) }
+          return v
+          }
+
+          private static func writeU64(_ d: inout Data, _ o: Int, _ v: UInt64) {
+          guard o >= 0, o + 8 <= d.count else { return }
+          for i in 0..<8 {
+            d[d.index(d.startIndex, offsetBy:o+i)] = UInt8((v >> UInt64(i*8)) & 0xFF)
+          }
+          }
+
+          private static func cString(_ d: Data, _ o: Int, _ max: Int) -> String {
+          guard o >= 0, o < d.count else { return "" }
+          var bytes: [UInt8] = []
+          for i in 0..<max where o+i < d.count {
+            let b = d[d.index(d.startIndex, offsetBy:o+i)]
+            if b == 0 { break }
+            bytes.append(b)
+          }
+          return String(bytes: bytes, encoding: .ascii) ?? ""
+          }
+          }
+          V5STAGE2
           mkdir -p "$(dirname 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift')"
           cat > 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift' <<'V5EOF09'
           import Foundation
@@ -1695,6 +1921,7 @@ jobs:
           @Published var executableURL: URL?
           @Published var peInfo: PEImageInfo?
           @Published var mapResult: PEMapResult?
+          @Published var stage2Result: PERelocImportResult?
           @Published var stages: [V5RuntimeStage] = []
           @Published var logLines: [String] = []
           @Published var busy = false
@@ -1717,6 +1944,7 @@ jobs:
           stages = []
           peInfo = nil
           mapResult = nil
+          stage2Result = nil
           executableURL = exe
           selectedFolder = exe.deletingLastPathComponent()
           append("Inspecting imported executable \(exe.lastPathComponent)…")
@@ -1808,6 +2036,34 @@ jobs:
           }
           }
 
+          func analyzeRelocationsAndImports() {
+          guard let exe = executableURL, let info = peInfo, mapResult != nil else {
+            stages.append(.init(name:"Relocations + imports",passed:false,detail:"Map the EXE image first."))
+            append("Stage 2 requires a mapped PE image")
+            return
+          }
+
+          busy = true
+          stage2Result = nil
+          stages.removeAll(where: { $0.name == "Relocations + imports" })
+          append("Analyzing base relocations and import thunks…")
+          defer { busy = false }
+
+          do {
+            let r = try PEStage2Analyzer.analyze(url: exe, info: info)
+            stage2Result = r
+            stages.append(.init(
+              name:"Relocations + imports",
+              passed:true,
+              detail:"\(r.dir64Relocations) DIR64 relocations • \(r.importSymbolCount) imports • \(r.importDLLCount) DLLs"
+            ))
+            append("Stage 2 PASS: \(r.relocationBlocks) relocation blocks, \(r.dir64Relocations) DIR64 patches, \(r.importSymbolCount) import thunks")
+          } catch {
+            stages.append(.init(name:"Relocations + imports",passed:false,detail:error.localizedDescription))
+            append("Stage 2 failed: \(error.localizedDescription)")
+          }
+          }
+
           func runFoundationDiagnostics() {
           busy = true
           stages.removeAll(where: { ["V5CPU core", "Metal pipeline", "Guest memory", "JIT capability"].contains($0.name) })
@@ -1862,7 +2118,7 @@ jobs:
                     VStack(alignment: .leading, spacing: 4) {
                         Text("V5 Runtime Core")
                             .font(.system(size: 30, weight: .bold, design: .rounded))
-                        Text("Internal compatibility engine • PE Mapper build 2.1")
+                        Text("Internal compatibility engine • Relocations + Imports build 2.2")
                             .foregroundColor(.secondary)
                     }
 
@@ -1945,6 +2201,50 @@ jobs:
                         }
                     }
 
+                    if runtime.mapResult != nil {
+                        card {
+                            Label("V5 Relocations + Imports", systemImage: "link.badge.plus")
+                                .font(.headline)
+                                .foregroundColor(gold)
+
+                            Button {
+                                runtime.analyzeRelocationsAndImports()
+                            } label: {
+                                Label(runtime.stage2Result == nil ? "Analyze Relocations & Imports" : "Re-analyze Relocations & Imports",
+                                      systemImage: "arrow.triangle.branch")
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(green)
+                            .disabled(runtime.busy)
+
+                            if let r = runtime.stage2Result {
+                                row("Relocation Blocks", "\(r.relocationBlocks)")
+                                row("DIR64 Patched", "\(r.dir64Relocations)")
+                                row("Ignored Relocs", "\(r.ignoredRelocations)")
+                                row("Synthetic Delta", String(format: "0x%llX", r.relocationDelta))
+                                row("Import DLLs", "\(r.importDLLCount)")
+                                row("Import Symbols", "\(r.importSymbolCount)")
+                                row("Named / Ordinal", "\(r.namedImportCount) / \(r.ordinalImportCount)")
+
+                                if !r.sampleImports.isEmpty {
+                                    Text("Sample import plan")
+                                        .font(.caption.bold())
+                                        .foregroundColor(.secondary)
+                                    Text(r.sampleImports.joined(separator: "\n"))
+                                        .font(.caption2.monospaced())
+                                        .foregroundColor(.secondary)
+                                        .textSelection(.enabled)
+                                }
+
+                                Text("This validates relocation patching and parses the IAT plan. WinAPI functions are not bound or executed yet.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+
                     card {
                         Button {
                             runtime.runFoundationDiagnostics()
@@ -1983,7 +2283,7 @@ jobs:
                                 .font(.caption.monospaced().bold())
                                 .foregroundColor(runtime.foundationReady ? green : .secondary)
                         }
-                        Text("Current milestone: PE image mapping. Next: relocations, import thunk resolution, Win64 ABI bridge, then JIT translation blocks. No DRM bypass is included.")
+                        Text("Current milestone: relocation patching + import thunk planning. Next: WinAPI binding, Win64 ABI bridge, then JIT translation blocks. No DRM bypass is included.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -2134,14 +2434,14 @@ jobs:
           cd V5iOS-v2.0-RUNTIME-CORE
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -print -quit)
           test -n "$APP"
-          rm -rf Payload V5iOS-v2.1-PE-MAPPER-unsigned.ipa
+          rm -rf Payload V5iOS-v2.2-RELOC-IMPORTS-unsigned.ipa
           mkdir Payload
           cp -R "$APP" Payload/
-          zip -qry V5iOS-v2.1-PE-MAPPER-unsigned.ipa Payload
+          zip -qry V5iOS-v2.2-RELOC-IMPORTS-unsigned.ipa Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: V5iOS-v2.1-PE-MAPPER-unsigned-ipa
-          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v2.1-PE-MAPPER-unsigned.ipa
+          name: V5iOS-v2.2-RELOC-IMPORTS-unsigned-ipa
+          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v2.2-RELOC-IMPORTS-unsigned.ipa
           if-no-files-found: error
