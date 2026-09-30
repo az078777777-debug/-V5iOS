@@ -1444,9 +1444,8 @@ jobs:
           }
           }
           V5EOF08
-          mkdir -p "$(dirname 'V5iOS/Runtime/PE/PEImageMapper.swift')"
-          cat > 'V5iOS/Runtime/PE/PEImageMapper.swift' <<'V5MAP'
-          import Foundation
+          # Keep the mapper in PEImage.swift so it is compiled by the existing Xcode target.
+          cat >> 'V5iOS/Runtime/PE/PEImage.swift' <<'V5MAP'
 
           struct PEMapResult {
           let success: Bool
