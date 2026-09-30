@@ -7,10 +7,6 @@ on:
     paths:
       - ".github/workflows/build-unsigned-ipa.yml"
 
-permissions:
-  contents: read
-  actions: read
-
 jobs:
   package:
     runs-on: macos-15
@@ -20,53 +16,15 @@ jobs:
       - name: Checkout V5iOS repository
         uses: actions/checkout@v4
 
-      - name: Find latest successful Madeira runtime artifact
-        id: upstream
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Download latest successful Madeira runtime
         run: |
           set -euo pipefail
-
-          API="https://api.github.com/repos/Makaria122/Madeira-IPA"
-
-          RUN_JSON="$(curl -fsSL \
-            -H "Accept: application/vnd.github+json" \
-            "$API/actions/workflows/build.yml/runs?branch=main&status=success&per_page=1")"
-
-          RUN_ID="$(python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["workflow_runs"][0]["id"])' <<<"$RUN_JSON")"
-          test -n "$RUN_ID"
-
-          ART_JSON="$(curl -fsSL \
-            -H "Accept: application/vnd.github+json" \
-            "$API/actions/runs/$RUN_ID/artifacts")"
-
-          ARTIFACT_ID="$(python3 -c 'import json,sys; d=json.load(sys.stdin); a=[x for x in d["artifacts"] if x["name"]=="Madeira-unsigned" and not x["expired"]]; print(a[0]["id"])' <<<"$ART_JSON")"
-          test -n "$ARTIFACT_ID"
-
-          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
-          echo "artifact_id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
-          echo "Using upstream run $RUN_ID artifact $ARTIFACT_ID"
-
-      - name: Download latest successful runtime
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ARTIFACT_ID: ${{ steps.upstream.outputs.artifact_id }}
-        run: |
-          set -euo pipefail
+          rm -rf upstream
           mkdir -p upstream
 
-          # First try GitHub's artifact API directly.
-          if gh api \
-            -H "Accept: application/vnd.github+json" \
-            "/repos/Makaria122/Madeira-IPA/actions/artifacts/$ARTIFACT_ID/zip" \
-            > /tmp/madeira-artifact.zip; then
-            echo "Downloaded from GitHub Actions API"
-          else
-            echo "Direct artifact API was unavailable; trying public nightly mirror."
-            curl -fL --retry 3 \
-              "https://nightly.link/Makaria122/Madeira-IPA/workflows/build.yml/main/Madeira-unsigned.zip" \
-              -o /tmp/madeira-artifact.zip
-          fi
+          curl -fL --retry 5 --retry-delay 3 \
+            "https://nightly.link/Makaria122/Madeira-IPA/workflows/build.yml/main/Madeira-unsigned.zip" \
+            -o /tmp/madeira-artifact.zip
 
           unzip -q /tmp/madeira-artifact.zip -d upstream
           test -s upstream/Madeira.ipa
@@ -81,8 +39,8 @@ jobs:
       - name: Brand runtime as V5iOS Hybrid Runtime 5.0
         run: |
           set -euo pipefail
-          rm -rf repack Payload
-          mkdir repack
+          rm -rf repack
+          mkdir -p repack
 
           unzip -q upstream/Madeira.ipa -d repack
           APP="$(find repack/Payload -maxdepth 1 -type d -name '*.app' -print -quit)"
@@ -95,8 +53,6 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 5.0" "$APP/Info.plist"
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 500" "$APP/Info.plist"
 
-          # Editing the plist invalidates the upstream ad-hoc signature.
-          # ESign will apply the user's own signature after download.
           rm -rf "$APP/_CodeSignature"
 
           cat > "$APP/V5IOS-SOURCE-NOTICE.txt" <<'EOF'
@@ -128,21 +84,3 @@ jobs:
             V5iOS-HYBRID-RUNTIME-5.0.ipa.sha256
           retention-days: 30
           if-no-files-found: error
-
-      - name: Build summary
-        if: always()
-        run: |
-          {
-            echo "# V5iOS Hybrid Runtime 5.0"
-            echo
-            echo "Runtime: Madeira / Wine + FEX + DXMT"
-            echo "Upstream successful run: ${{ steps.upstream.outputs.run_id }}"
-            echo
-            if [ -f V5iOS-HYBRID-RUNTIME-5.0.ipa ]; then
-              echo "IPA: generated"
-              echo "SHA-256: \`$(shasum -a 256 V5iOS-HYBRID-RUNTIME-5.0.ipa | awk '{print $1}')\`"
-              echo "Size: $(du -h V5iOS-HYBRID-RUNTIME-5.0.ipa | awk '{print $1}')"
-            else
-              echo "IPA: not generated"
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
