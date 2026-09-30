@@ -1898,8 +1898,8 @@ jobs:
         run: |
           cd V5iOS-v2.0-RUNTIME-CORE
           mkdir -p deps/mvk
-          curl -fL --retry 3 \\
-            -o deps/MoltenVK-ios.tar \\
+          curl -fL --retry 3 \
+            -o deps/MoltenVK-ios.tar \
             https://github.com/KhronosGroup/MoltenVK/releases/download/v1.4.2/MoltenVK-ios.tar
           tar -xf deps/MoltenVK-ios.tar -C deps/mvk
 
@@ -1914,19 +1914,19 @@ jobs:
       - name: Build V5iOS v2.0 Runtime Core
         run: |
           cd V5iOS-v2.0-RUNTIME-CORE
-          xcodebuild \\
-            -project V5iOS.xcodeproj \\
-            -scheme V5iOS \\
-            -configuration Release \\
-            -sdk iphoneos \\
-            -derivedDataPath build \\
-            ARCHS=arm64 \\
-            ONLY_ACTIVE_ARCH=YES \\
-            HEADER_SEARCH_PATHS="$MVK_INCLUDE" \\
-            OTHER_LDFLAGS="\$(inherited) $MVK_LIB -ObjC -lc++ -framework Metal -framework Foundation -framework Security -framework QuartzCore -framework CoreGraphics -framework UIKit -framework IOSurface -framework GameController" \\
-            CODE_SIGNING_ALLOWED=NO \\
-            CODE_SIGNING_REQUIRED=NO \\
-            CODE_SIGN_IDENTITY="" \\
+          xcodebuild \
+            -project V5iOS.xcodeproj \
+            -scheme V5iOS \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=YES \
+            HEADER_SEARCH_PATHS="$MVK_INCLUDE" \
+            OTHER_LDFLAGS="\$(inherited) $MVK_LIB -ObjC -lc++ -framework Metal -framework Foundation -framework Security -framework QuartzCore -framework CoreGraphics -framework UIKit -framework IOSurface -framework GameController" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
             build
 
       - name: Create unsigned IPA
