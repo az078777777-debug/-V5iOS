@@ -16,7 +16,10 @@ jobs:
 
       - name: Prepare V5iOS v1.0 source from existing v0.2
         run: |
-          rm -rf V5iOS-v0.2
+          rm -rf V5iOS-v0.2 V5iOS-v0.2-AELLE-STORE.zip
+          curl -fL --retry 3 \
+            -o V5iOS-v0.2-AELLE-STORE.zip \
+            https://raw.githubusercontent.com/az078777777-debug/-V5iOS/01d73326de272da2999d255fd9cf7eb6043ce304/V5iOS-v0.2-AELLE-STORE.zip
           unzip -q V5iOS-v0.2-AELLE-STORE.zip
           test -d V5iOS-v0.2
 
