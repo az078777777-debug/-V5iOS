@@ -1,4 +1,4 @@
-name: Build V5iOS v2.0 Runtime Core IPA
+name: Build V5iOS v2.1 PE Mapper IPA
 
 on:
   workflow_dispatch:
@@ -344,13 +344,13 @@ jobs:
           	<key>CFBundlePackageType</key>
           	<string>APPL</string>
           	<key>CFBundleShortVersionString</key>
-          	<string>2.0</string>
+          	<string>2.1</string>
           	<key>CFBundleVersion</key>
-          	<string>200</string>
+          	<string>210</string>
           	<key>NSHumanReadableCopyright</key>
           	<string>© 2026 Ali Tahseen. All rights reserved.</string>
           	<key>CFBundleGetInfoString</key>
-          	<string>V5iOS v2.0 Runtime Core — Built by AELLE STORE • © 2026 Ali Tahseen</string>
+          	<string>V5iOS v2.1 PE Mapper — Built by AELLE STORE • © 2026 Ali Tahseen</string>
           	<key>LSRequiresIPhoneOS</key>
           	<true/>
           	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -2134,14 +2134,14 @@ jobs:
           cd V5iOS-v2.0-RUNTIME-CORE
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -print -quit)
           test -n "$APP"
-          rm -rf Payload V5iOS-v2.0-RUNTIME-CORE-unsigned.ipa
+          rm -rf Payload V5iOS-v2.1-PE-MAPPER-unsigned.ipa
           mkdir Payload
           cp -R "$APP" Payload/
-          zip -qry V5iOS-v2.0-RUNTIME-CORE-unsigned.ipa Payload
+          zip -qry V5iOS-v2.1-PE-MAPPER-unsigned.ipa Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: V5iOS-v2.0-RUNTIME-CORE-unsigned-ipa
-          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v2.0-RUNTIME-CORE-unsigned.ipa
+          name: V5iOS-v2.1-PE-MAPPER-unsigned-ipa
+          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v2.1-PE-MAPPER-unsigned.ipa
           if-no-files-found: error
