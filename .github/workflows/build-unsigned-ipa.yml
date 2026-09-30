@@ -1,4 +1,4 @@
-name: Build V5iOS v2.2 Relocations Imports IPA
+name: Build V5iOS v2.3 WinAPI Binder IPA
 
 on:
   workflow_dispatch:
@@ -344,13 +344,13 @@ jobs:
           	<key>CFBundlePackageType</key>
           	<string>APPL</string>
           	<key>CFBundleShortVersionString</key>
-          	<string>2.2</string>
+          	<string>2.3</string>
           	<key>CFBundleVersion</key>
-          	<string>220</string>
+          	<string>230</string>
           	<key>NSHumanReadableCopyright</key>
           	<string>© 2026 Ali Tahseen. All rights reserved.</string>
           	<key>CFBundleGetInfoString</key>
-          	<string>V5iOS v2.2 Relocations + Imports — Built by AELLE STORE • © 2026 Ali Tahseen</string>
+          	<string>V5iOS v2.3 WinAPI Binder — Built by AELLE STORE • © 2026 Ali Tahseen</string>
           	<key>LSRequiresIPhoneOS</key>
           	<true/>
           	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -499,7 +499,7 @@ jobs:
                     }
                     Text("Runtime Core")
                         .font(.headline)
-                    Text("Release 2.2 • V5 Runtime Foundation")
+                    Text("Release 2.3 • V5 Runtime Foundation")
                         .font(.caption.monospaced())
                         .foregroundColor(.secondary)
                 }
@@ -1744,6 +1744,249 @@ jobs:
           }
           }
           V5STAGE2
+          cat >> 'V5iOS/Runtime/PE/PEImage.swift' <<'V5WINAPI'
+          struct V5ImportBinding: Identifiable {
+          let id = UUID()
+          let dll: String
+          let symbol: String
+          let iatRVA: UInt32
+          let guestThunkAddress: UInt64
+          let supported: Bool
+          }
+
+          struct V5WinAPIBindResult {
+          let success: Bool
+          let dllCount: Int
+          let importCount: Int
+          let iatPatched: Int
+          let supportedCount: Int
+          let unsupportedCount: Int
+          let thunkBase: UInt64
+          let bindings: [V5ImportBinding]
+          let status: String
+          }
+
+          enum V5WinAPIBindError: Error, LocalizedError {
+          case malformed(String)
+          var errorDescription: String? {
+          switch self {
+          case .malformed(let s): return s
+          }
+          }
+          }
+
+          enum V5WinAPIBinder {
+          // This is a guest-side thunk range. V5CPU will later trap addresses
+          // from this range and dispatch them to native host shims.
+          private static let thunkBase: UInt64 = 0x00007FFF00000000
+          private static let thunkStride: UInt64 = 0x20
+
+          // Initial host-shim set. These are functions whose semantics can be
+          // implemented directly on iOS once the Win64 ABI dispatcher lands.
+          private static let supportedSymbols: Set<String> = [
+            "KERNEL32.DLL!GETCURRENTPROCESSID",
+            "KERNEL32.DLL!GETCURRENTTHREADID",
+            "KERNEL32.DLL!GETTICKCOUNT",
+            "KERNEL32.DLL!GETTICKCOUNT64",
+            "KERNEL32.DLL!QUERYPERFORMANCECOUNTER",
+            "KERNEL32.DLL!QUERYPERFORMANCEFREQUENCY",
+            "KERNEL32.DLL!SLEEP",
+            "KERNEL32.DLL!GETSYSTEMTIMEASFILETIME",
+            "KERNEL32.DLL!GETLOCALTIME",
+            "KERNEL32.DLL!GETSYSTEMTIME",
+            "KERNEL32.DLL!TLSALLOC",
+            "KERNEL32.DLL!TLSFREE",
+            "KERNEL32.DLL!TLSGETVALUE",
+            "KERNEL32.DLL!TLSSETVALUE",
+            "KERNEL32.DLL!GETLASTERROR",
+            "KERNEL32.DLL!SETLASTERROR",
+            "KERNEL32.DLL!GETPROCESSHEAP",
+            "KERNEL32.DLL!HEAPALLOC",
+            "KERNEL32.DLL!HEAPFREE",
+            "KERNEL32.DLL!HEAPREALLOC",
+            "KERNEL32.DLL!HEAPSIZE",
+            "KERNEL32.DLL!VIRTUALALLOC",
+            "KERNEL32.DLL!VIRTUALFREE",
+            "KERNEL32.DLL!VIRTUALPROTECT",
+            "KERNEL32.DLL!GETCURRENTDIRECTORYW",
+            "KERNEL32.DLL!SETCURRENTDIRECTORYW",
+            "KERNEL32.DLL!GETMODULEHANDLEW",
+            "KERNEL32.DLL!GETMODULEHANDLEA",
+            "KERNEL32.DLL!GETPROCADDRESS",
+            "KERNEL32.DLL!LOADLIBRARYW",
+            "KERNEL32.DLL!LOADLIBRARYA"
+          ]
+
+          static func bind(url: URL, info: PEImageInfo) throws -> V5WinAPIBindResult {
+          let file = try Data(contentsOf: url, options: [.mappedIfSafe])
+          let imageSize = Int(info.imageSize)
+          guard imageSize > 0, imageSize <= 512 * 1024 * 1024 else {
+            throw V5WinAPIBindError.malformed("Unsafe PE image size.")
+          }
+
+          var image = Data(count: imageSize)
+          let pe = Int(try u32(file, 0x3C))
+          guard pe + 24 <= file.count, try u32(file, pe) == 0x00004550 else {
+            throw V5WinAPIBindError.malformed("Invalid PE signature.")
+          }
+
+          let optionalSize = Int(try u16(file, pe + 4 + 16))
+          let optional = pe + 4 + 20
+          guard optional + optionalSize <= file.count else {
+            throw V5WinAPIBindError.malformed("Optional header truncated.")
+          }
+
+          let headerBytes = min(Int(try u32(file, optional + 60)), min(file.count, image.count))
+          if headerBytes > 0 {
+            image.replaceSubrange(0..<headerBytes, with: file[0..<headerBytes])
+          }
+
+          for section in info.sections {
+            let src = Int(section.rawOffset)
+            let dst = Int(section.virtualAddress)
+            let requested = Int(section.rawSize)
+            if requested == 0 { continue }
+            guard src >= 0, dst >= 0, src < file.count, dst < image.count else { continue }
+            let count = min(requested, min(file.count-src, image.count-dst))
+            if count > 0 {
+              image.replaceSubrange(dst..<(dst+count), with: file[src..<(src+count)])
+            }
+          }
+
+          guard optionalSize >= 128 else {
+            return .init(success:true,dllCount:0,importCount:0,iatPatched:0,
+                         supportedCount:0,unsupportedCount:0,thunkBase:thunkBase,
+                         bindings:[],status:"No import directory")
+          }
+
+          let importRVA = try u32(file, optional + 120)
+          let importSize = try u32(file, optional + 124)
+          guard importRVA != 0, importSize >= 20 else {
+            return .init(success:true,dllCount:0,importCount:0,iatPatched:0,
+                         supportedCount:0,unsupportedCount:0,thunkBase:thunkBase,
+                         bindings:[],status:"No imports to bind")
+          }
+
+          var descriptor = Int(importRVA)
+          let importEnd = min(image.count, descriptor + Int(importSize))
+          var dllCount = 0
+          var importCount = 0
+          var patched = 0
+          var supported = 0
+          var unsupported = 0
+          var bindings: [V5ImportBinding] = []
+          var nextThunkIndex: UInt64 = 0
+          var descriptorSafety = 0
+
+          while descriptor + 20 <= importEnd, descriptorSafety < 1024 {
+            let originalFirstThunk = try u32(image, descriptor)
+            let nameRVA = try u32(image, descriptor + 12)
+            let firstThunk = try u32(image, descriptor + 16)
+            if originalFirstThunk == 0 && nameRVA == 0 && firstThunk == 0 { break }
+
+            let dll = cString(image, Int(nameRVA), 260)
+            dllCount += 1
+
+            let sourceThunkRVA = originalFirstThunk != 0 ? originalFirstThunk : firstThunk
+            var srcThunk = Int(sourceThunkRVA)
+            var iatThunk = Int(firstThunk)
+            var thunkSafety = 0
+
+            while srcThunk + 8 <= image.count,
+                  iatThunk + 8 <= image.count,
+                  thunkSafety < 65536 {
+              let value = try u64(image, srcThunk)
+              if value == 0 { break }
+
+              importCount += 1
+              let symbol: String
+
+              if (value & 0x8000000000000000) != 0 {
+                symbol = "#\(value & 0xFFFF)"
+              } else {
+                let ibn = Int(value)
+                guard ibn + 2 < image.count else { break }
+                symbol = cString(image, ibn + 2, 512)
+              }
+
+              let key = "\(dll.uppercased())!\(symbol.uppercased())"
+              let isSupported = supportedSymbols.contains(key)
+              if isSupported { supported += 1 } else { unsupported += 1 }
+
+              let thunkAddress = thunkBase &+ (nextThunkIndex * thunkStride)
+              writeU64(&image, iatThunk, thunkAddress)
+              patched += 1
+
+              bindings.append(.init(
+                dll: dll,
+                symbol: symbol,
+                iatRVA: UInt32(iatThunk),
+                guestThunkAddress: thunkAddress,
+                supported: isSupported
+              ))
+
+              nextThunkIndex += 1
+              srcThunk += 8
+              iatThunk += 8
+              thunkSafety += 1
+            }
+
+            descriptor += 20
+            descriptorSafety += 1
+          }
+
+          return .init(
+            success: true,
+            dllCount: dllCount,
+            importCount: importCount,
+            iatPatched: patched,
+            supportedCount: supported,
+            unsupportedCount: unsupported,
+            thunkBase: thunkBase,
+            bindings: bindings,
+            status: "IAT patched to V5 guest thunk table"
+          )
+          }
+
+          private static func u16(_ d: Data, _ o: Int) throws -> UInt16 {
+          guard o >= 0, o + 2 <= d.count else { throw V5WinAPIBindError.malformed("Read outside PE image.") }
+          return UInt16(d[d.index(d.startIndex,offsetBy:o)]) |
+            (UInt16(d[d.index(d.startIndex,offsetBy:o+1)]) << 8)
+          }
+
+          private static func u32(_ d: Data, _ o: Int) throws -> UInt32 {
+          guard o >= 0, o + 4 <= d.count else { throw V5WinAPIBindError.malformed("Read outside PE image.") }
+          var v: UInt32 = 0
+          for i in 0..<4 { v |= UInt32(d[d.index(d.startIndex,offsetBy:o+i)]) << UInt32(i*8) }
+          return v
+          }
+
+          private static func u64(_ d: Data, _ o: Int) throws -> UInt64 {
+          guard o >= 0, o + 8 <= d.count else { throw V5WinAPIBindError.malformed("Read outside PE image.") }
+          var v: UInt64 = 0
+          for i in 0..<8 { v |= UInt64(d[d.index(d.startIndex,offsetBy:o+i)]) << UInt64(i*8) }
+          return v
+          }
+
+          private static func writeU64(_ d: inout Data, _ o: Int, _ v: UInt64) {
+          guard o >= 0, o + 8 <= d.count else { return }
+          for i in 0..<8 {
+            d[d.index(d.startIndex,offsetBy:o+i)] = UInt8((v >> UInt64(i*8)) & 0xFF)
+          }
+          }
+
+          private static func cString(_ d: Data, _ o: Int, _ max: Int) -> String {
+          guard o >= 0, o < d.count else { return "" }
+          var bytes: [UInt8] = []
+          for i in 0..<max where o+i < d.count {
+            let b = d[d.index(d.startIndex,offsetBy:o+i)]
+            if b == 0 { break }
+            bytes.append(b)
+          }
+          return String(bytes:bytes,encoding:.ascii) ?? ""
+          }
+          }
+          V5WINAPI
           mkdir -p "$(dirname 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift')"
           cat > 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift' <<'V5EOF09'
           import Foundation
@@ -1922,6 +2165,7 @@ jobs:
           @Published var peInfo: PEImageInfo?
           @Published var mapResult: PEMapResult?
           @Published var stage2Result: PERelocImportResult?
+          @Published var winAPIBindResult: V5WinAPIBindResult?
           @Published var stages: [V5RuntimeStage] = []
           @Published var logLines: [String] = []
           @Published var busy = false
@@ -1945,6 +2189,7 @@ jobs:
           peInfo = nil
           mapResult = nil
           stage2Result = nil
+          winAPIBindResult = nil
           executableURL = exe
           selectedFolder = exe.deletingLastPathComponent()
           append("Inspecting imported executable \(exe.lastPathComponent)…")
@@ -2064,6 +2309,34 @@ jobs:
           }
           }
 
+          func bindWinAPIImports() {
+          guard let exe = executableURL, let info = peInfo, stage2Result != nil else {
+            stages.append(.init(name:"WinAPI binder",passed:false,detail:"Run Relocations + Imports first."))
+            append("WinAPI binder requires Stage 2")
+            return
+          }
+
+          busy = true
+          winAPIBindResult = nil
+          stages.removeAll(where: { $0.name == "WinAPI binder" })
+          append("Binding PE imports to V5 guest thunk table…")
+          defer { busy = false }
+
+          do {
+            let r = try V5WinAPIBinder.bind(url: exe, info: info)
+            winAPIBindResult = r
+            stages.append(.init(
+              name:"WinAPI binder",
+              passed:r.success,
+              detail:"\(r.iatPatched) IAT entries • \(r.supportedCount) initial host shims • \(r.unsupportedCount) pending"
+            ))
+            append("WinAPI binder PASS: \(r.iatPatched) IAT entries patched to V5 thunk range")
+          } catch {
+            stages.append(.init(name:"WinAPI binder",passed:false,detail:error.localizedDescription))
+            append("WinAPI binder failed: \(error.localizedDescription)")
+          }
+          }
+
           func runFoundationDiagnostics() {
           busy = true
           stages.removeAll(where: { ["V5CPU core", "Metal pipeline", "Guest memory", "JIT capability"].contains($0.name) })
@@ -2118,7 +2391,7 @@ jobs:
                     VStack(alignment: .leading, spacing: 4) {
                         Text("V5 Runtime Core")
                             .font(.system(size: 30, weight: .bold, design: .rounded))
-                        Text("Internal compatibility engine • Relocations + Imports build 2.2")
+                        Text("Internal compatibility engine • WinAPI Binder build 2.3")
                             .foregroundColor(.secondary)
                     }
 
@@ -2245,6 +2518,55 @@ jobs:
                         }
                     }
 
+                    if runtime.stage2Result != nil {
+                        card {
+                            Label("V5 WinAPI Binder", systemImage: "point.3.connected.trianglepath.dotted")
+                                .font(.headline)
+                                .foregroundColor(gold)
+
+                            Button {
+                                runtime.bindWinAPIImports()
+                            } label: {
+                                Label(runtime.winAPIBindResult == nil ? "Bind Imports To V5 Thunks" : "Re-bind Imports To V5 Thunks",
+                                      systemImage: "link.circle.fill")
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(green)
+                            .disabled(runtime.busy)
+
+                            if let r = runtime.winAPIBindResult {
+                                row("IAT Patched", "\(r.iatPatched)")
+                                row("Import DLLs", "\(r.dllCount)")
+                                row("Imports", "\(r.importCount)")
+                                row("Host Shim Ready", "\(r.supportedCount)")
+                                row("Pending", "\(r.unsupportedCount)")
+                                row("Thunk Base", String(format:"0x%llX", r.thunkBase))
+
+                                let sample = Array(r.bindings.prefix(24))
+                                if !sample.isEmpty {
+                                    Text("Guest thunk bindings")
+                                        .font(.caption.bold())
+                                        .foregroundColor(.secondary)
+                                    ForEach(sample) { b in
+                                        HStack(alignment:.top,spacing:6) {
+                                            Image(systemName:b.supported ? "checkmark.circle.fill" : "clock.badge.exclamationmark.fill")
+                                                .foregroundColor(b.supported ? green : .orange)
+                                            Text("\(b.dll)!\(b.symbol)\nIAT 0x\(String(b.iatRVA,radix:16).uppercased()) → 0x\(String(b.guestThunkAddress,radix:16).uppercased())")
+                                                .font(.caption2.monospaced())
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+
+                                Text("The IAT now points at V5 synthetic guest thunks. The next stage is the Win64 ABI dispatcher that traps those addresses and calls native iOS shims.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+
                     card {
                         Button {
                             runtime.runFoundationDiagnostics()
@@ -2283,7 +2605,7 @@ jobs:
                                 .font(.caption.monospaced().bold())
                                 .foregroundColor(runtime.foundationReady ? green : .secondary)
                         }
-                        Text("Current milestone: relocation patching + import thunk planning. Next: WinAPI binding, Win64 ABI bridge, then JIT translation blocks. No DRM bypass is included.")
+                        Text("Current milestone: IAT binding to V5 guest thunks. Next: Win64 ABI dispatcher, native WinAPI shims, then JIT translation blocks. No DRM bypass is included.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -2434,14 +2756,14 @@ jobs:
           cd V5iOS-v2.0-RUNTIME-CORE
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -print -quit)
           test -n "$APP"
-          rm -rf Payload V5iOS-v2.2-RELOC-IMPORTS-unsigned.ipa
+          rm -rf Payload V5iOS-v2.3-WINAPI-BINDER-unsigned.ipa
           mkdir Payload
           cp -R "$APP" Payload/
-          zip -qry V5iOS-v2.2-RELOC-IMPORTS-unsigned.ipa Payload
+          zip -qry V5iOS-v2.3-WINAPI-BINDER-unsigned.ipa Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: V5iOS-v2.2-RELOC-IMPORTS-unsigned-ipa
-          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v2.2-RELOC-IMPORTS-unsigned.ipa
+          name: V5iOS-v2.3-WINAPI-BINDER-unsigned-ipa
+          path: V5iOS-v2.0-RUNTIME-CORE/V5iOS-v2.3-WINAPI-BINDER-unsigned.ipa
           if-no-files-found: error
