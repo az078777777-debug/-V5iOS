@@ -1473,7 +1473,6 @@ jobs:
           mkdir -p "$(dirname 'V5iOS/Runtime/System/JITCapability.swift')"
           cat > 'V5iOS/Runtime/System/JITCapability.swift' <<'V5EOF10'
           import Foundation
-          import Security
 
           struct JITCapabilityResult {
           let allowJITEntitlement: Bool
@@ -1483,25 +1482,14 @@ jobs:
 
           enum JITCapability {
           static func probe() -> JITCapabilityResult {
-          let task = SecTaskCreateFromSelf(nil)
-          let allowJIT = entitlementBool(task: task, key: "com.apple.security.cs.allow-jit")
-          let getTask = entitlementBool(task: task, key: "get-task-allow")
-
-          let status: String
-          if allowJIT {
-            status = "JIT entitlement is present."
-          } else if getTask {
-            status = "Debugger entitlement present; JIT may be enabled by an attached debugger/JIT helper."
-          } else {
-            status = "No permanent JIT entitlement detected. A debugger/JIT helper is required for a future dynamic translator on standard iOS."
-          }
-          return .init(allowJITEntitlement: allowJIT, getTaskAllow: getTask, status: status)
-          }
-
-          private static func entitlementBool(task: SecTask?, key: String) -> Bool {
-          guard let task,
-              let value = SecTaskCopyValueForEntitlement(task, key as CFString, nil) else { return false }
-          return (value as? Bool) == true
+          // Public iOS SDK does not expose SecTask entitlement inspection.
+          // Keep this probe App-Store-SDK-safe and report the real requirement:
+          // a debugger/JIT helper must enable executable translation pages at runtime.
+          return .init(
+            allowJITEntitlement: false,
+            getTaskAllow: false,
+            status: "JIT is not enabled by this unsigned foundation build. Enable JIT with a debugger/JIT helper before the future x86-64 dynamic translator starts."
+          )
           }
           }
           V5EOF10
@@ -1541,7 +1529,9 @@ jobs:
           private static let key = "V5Runtime.GameFolderBookmark"
 
           static func save(url: URL) throws {
-          let data = try url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil)
+          // .withSecurityScope is macOS-only. On iOS, persist the document-picker URL
+          // using a normal bookmark and reacquire access when the URL is used.
+          let data = try url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
           UserDefaults.standard.set(data, forKey: key)
           }
 
@@ -1549,7 +1539,7 @@ jobs:
           guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
           var stale = false
           do {
-            let url = try URL(resolvingBookmarkData: data, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &stale)
+            let url = try URL(resolvingBookmarkData: data, options: [], relativeTo: nil, bookmarkDataIsStale: &stale)
             if stale { try? save(url: url) }
             return url
           } catch {
