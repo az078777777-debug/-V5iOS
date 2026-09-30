@@ -31,384 +31,384 @@ jobs:
           cd V5iOS-v2.0-RUNTIME-CORE
           mkdir -p "$(dirname 'V5iOS.xcodeproj/project.pbxproj')"
           cat > 'V5iOS.xcodeproj/project.pbxproj' <<'V5EOF00'
-// !$*UTF8*$!
-{
-	archiveVersion = 1;
-	classes = {};
-	objectVersion = 56;
-	objects = {
+          // !$*UTF8*$!
+          {
+          	archiveVersion = 1;
+          	classes = {};
+          	objectVersion = 56;
+          	objects = {
 
-/* Begin PBXBuildFile section */
-		A00000000000000000000001 /* V5iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000001 /* V5iOSApp.swift */; };
-		A00000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002 /* ContentView.swift */; };
-		A00000000000000000000003 /* FolderPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000003 /* FolderPicker.swift */; };
-		A00000000000000000000004 /* DeviceProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000004 /* DeviceProbe.swift */; };
-		A00000000000000000000005 /* GameFolderScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000005 /* GameFolderScanner.swift */; };
-		A00000000000000000000006 /* VulkanProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000008 /* VulkanProbe.swift */; };
-		A00000000000000000000007 /* VulkanProbe.c in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000009 /* VulkanProbe.c */; };
-		A00000000000000000000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000011 /* Assets.xcassets */; };
-		A00000000000000000000009 /* V5CPUProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000012 /* V5CPUProbe.swift */; };
-		A00000000000000000000010 /* V5CPUCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000013 /* V5CPUCore.cpp */; };
-		A00000000000000000000011 /* PEImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000015 /* PEImage.swift */; };
-		A00000000000000000000012 /* MetalPipelineProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000016 /* MetalPipelineProbe.swift */; };
-		A00000000000000000000013 /* JITCapability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000017 /* JITCapability.swift */; };
-		A00000000000000000000014 /* RuntimeMemoryProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000018 /* RuntimeMemoryProbe.swift */; };
-		A00000000000000000000015 /* RuntimeBookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000019 /* RuntimeBookmarkStore.swift */; };
-		A00000000000000000000016 /* V5RuntimeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000020 /* V5RuntimeCoordinator.swift */; };
-		A00000000000000000000017 /* RuntimeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000021 /* RuntimeDashboardView.swift */; };
-/* End PBXBuildFile section */
+          /* Begin PBXBuildFile section */
+          		A00000000000000000000001 /* V5iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000001 /* V5iOSApp.swift */; };
+          		A00000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002 /* ContentView.swift */; };
+          		A00000000000000000000003 /* FolderPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000003 /* FolderPicker.swift */; };
+          		A00000000000000000000004 /* DeviceProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000004 /* DeviceProbe.swift */; };
+          		A00000000000000000000005 /* GameFolderScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000005 /* GameFolderScanner.swift */; };
+          		A00000000000000000000006 /* VulkanProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000008 /* VulkanProbe.swift */; };
+          		A00000000000000000000007 /* VulkanProbe.c in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000009 /* VulkanProbe.c */; };
+          		A00000000000000000000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000011 /* Assets.xcassets */; };
+          		A00000000000000000000009 /* V5CPUProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000012 /* V5CPUProbe.swift */; };
+          		A00000000000000000000010 /* V5CPUCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000013 /* V5CPUCore.cpp */; };
+          		A00000000000000000000011 /* PEImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000015 /* PEImage.swift */; };
+          		A00000000000000000000012 /* MetalPipelineProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000016 /* MetalPipelineProbe.swift */; };
+          		A00000000000000000000013 /* JITCapability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000017 /* JITCapability.swift */; };
+          		A00000000000000000000014 /* RuntimeMemoryProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000018 /* RuntimeMemoryProbe.swift */; };
+          		A00000000000000000000015 /* RuntimeBookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000019 /* RuntimeBookmarkStore.swift */; };
+          		A00000000000000000000016 /* V5RuntimeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000020 /* V5RuntimeCoordinator.swift */; };
+          		A00000000000000000000017 /* RuntimeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000021 /* RuntimeDashboardView.swift */; };
+          /* End PBXBuildFile section */
 
-/* Begin PBXFileReference section */
-		B00000000000000000000001 /* V5iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V5iOSApp.swift; sourceTree = "<group>"; };
-		B00000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B00000000000000000000003 /* FolderPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderPicker.swift; sourceTree = "<group>"; };
-		B00000000000000000000004 /* DeviceProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProbe.swift; sourceTree = "<group>"; };
-		B00000000000000000000005 /* GameFolderScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameFolderScanner.swift; sourceTree = "<group>"; };
-		B00000000000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B00000000000000000000007 /* V5iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = V5iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B00000000000000000000008 /* VulkanProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VulkanProbe.swift; sourceTree = "<group>"; };
-		B00000000000000000000009 /* VulkanProbe.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = VulkanProbe.c; sourceTree = "<group>"; };
-		B00000000000000000000010 /* VulkanProbeBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VulkanProbeBridge.h; sourceTree = "<group>"; };
-		B00000000000000000000011 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B00000000000000000000012 /* V5CPUProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPU/V5CPUProbe.swift; sourceTree = "<group>"; };
-		B00000000000000000000013 /* V5CPUCore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPU/V5CPUCore.cpp; sourceTree = "<group>"; };
-		B00000000000000000000014 /* V5CPUBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CPU/V5CPUBridge.h; sourceTree = "<group>"; };
-		B00000000000000000000015 /* PEImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PE/PEImage.swift; sourceTree = "<group>"; };
-		B00000000000000000000016 /* MetalPipelineProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graphics/MetalPipelineProbe.swift; sourceTree = "<group>"; };
-		B00000000000000000000017 /* JITCapability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = System/JITCapability.swift; sourceTree = "<group>"; };
-		B00000000000000000000018 /* RuntimeMemoryProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = System/RuntimeMemoryProbe.swift; sourceTree = "<group>"; };
-		B00000000000000000000019 /* RuntimeBookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = System/RuntimeBookmarkStore.swift; sourceTree = "<group>"; };
-		B00000000000000000000020 /* V5RuntimeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = System/V5RuntimeCoordinator.swift; sourceTree = "<group>"; };
-		B00000000000000000000021 /* RuntimeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/RuntimeDashboardView.swift; sourceTree = "<group>"; };
-/* End PBXFileReference section */
+          /* Begin PBXFileReference section */
+          		B00000000000000000000001 /* V5iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V5iOSApp.swift; sourceTree = "<group>"; };
+          		B00000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+          		B00000000000000000000003 /* FolderPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderPicker.swift; sourceTree = "<group>"; };
+          		B00000000000000000000004 /* DeviceProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProbe.swift; sourceTree = "<group>"; };
+          		B00000000000000000000005 /* GameFolderScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameFolderScanner.swift; sourceTree = "<group>"; };
+          		B00000000000000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+          		B00000000000000000000007 /* V5iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = V5iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+          		B00000000000000000000008 /* VulkanProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VulkanProbe.swift; sourceTree = "<group>"; };
+          		B00000000000000000000009 /* VulkanProbe.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = VulkanProbe.c; sourceTree = "<group>"; };
+          		B00000000000000000000010 /* VulkanProbeBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VulkanProbeBridge.h; sourceTree = "<group>"; };
+          		B00000000000000000000011 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+          		B00000000000000000000012 /* V5CPUProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPU/V5CPUProbe.swift; sourceTree = "<group>"; };
+          		B00000000000000000000013 /* V5CPUCore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPU/V5CPUCore.cpp; sourceTree = "<group>"; };
+          		B00000000000000000000014 /* V5CPUBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CPU/V5CPUBridge.h; sourceTree = "<group>"; };
+          		B00000000000000000000015 /* PEImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PE/PEImage.swift; sourceTree = "<group>"; };
+          		B00000000000000000000016 /* MetalPipelineProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graphics/MetalPipelineProbe.swift; sourceTree = "<group>"; };
+          		B00000000000000000000017 /* JITCapability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = System/JITCapability.swift; sourceTree = "<group>"; };
+          		B00000000000000000000018 /* RuntimeMemoryProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = System/RuntimeMemoryProbe.swift; sourceTree = "<group>"; };
+          		B00000000000000000000019 /* RuntimeBookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = System/RuntimeBookmarkStore.swift; sourceTree = "<group>"; };
+          		B00000000000000000000020 /* V5RuntimeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = System/V5RuntimeCoordinator.swift; sourceTree = "<group>"; };
+          		B00000000000000000000021 /* RuntimeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/RuntimeDashboardView.swift; sourceTree = "<group>"; };
+          /* End PBXFileReference section */
 
-/* Begin PBXFrameworksBuildPhase section */
-		C00000000000000000000001 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = ();
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
+          /* Begin PBXFrameworksBuildPhase section */
+          		C00000000000000000000001 /* Frameworks */ = {
+          			isa = PBXFrameworksBuildPhase;
+          			buildActionMask = 2147483647;
+          			files = ();
+          			runOnlyForDeploymentPostprocessing = 0;
+          		};
+          /* End PBXFrameworksBuildPhase section */
 
-/* Begin PBXGroup section */
-		D00000000000000000000001 = {
-			isa = PBXGroup;
-			children = (
-				D00000000000000000000002 /* V5iOS */,
-				D00000000000000000000006 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		D00000000000000000000002 /* V5iOS */ = {
-			isa = PBXGroup;
-			path = V5iOS;
-			sourceTree = "<group>";
-			children = (
-				D00000000000000000000003 /* App */,
-				D00000000000000000000004 /* Core */,
-				D00000000000000000000005 /* UI */,
-				D00000000000000000000007 /* Runtime */,
-				B00000000000000000000006 /* Info.plist */,
-				B00000000000000000000011 /* Assets.xcassets */,
-			);
-		};
-		D00000000000000000000003 /* App */ = {
-			isa = PBXGroup;
-			path = App;
-			sourceTree = "<group>";
-			children = (B00000000000000000000001 /* V5iOSApp.swift */);
-		};
-		D00000000000000000000004 /* Core */ = {
-			isa = PBXGroup;
-			path = Core;
-			sourceTree = "<group>";
-			children = (
-				B00000000000000000000004 /* DeviceProbe.swift */,
-				B00000000000000000000005 /* GameFolderScanner.swift */,
-				B00000000000000000000008 /* VulkanProbe.swift */,
-				B00000000000000000000009 /* VulkanProbe.c */,
-				B00000000000000000000010 /* VulkanProbeBridge.h */,
-			);
-		};
-		D00000000000000000000005 /* UI */ = {
-			isa = PBXGroup;
-			path = UI;
-			sourceTree = "<group>";
-			children = (
-				B00000000000000000000002 /* ContentView.swift */,
-				B00000000000000000000003 /* FolderPicker.swift */,
-			);
-		};
+          /* Begin PBXGroup section */
+          		D00000000000000000000001 = {
+          			isa = PBXGroup;
+          			children = (
+          				D00000000000000000000002 /* V5iOS */,
+          				D00000000000000000000006 /* Products */,
+          			);
+          			sourceTree = "<group>";
+          		};
+          		D00000000000000000000002 /* V5iOS */ = {
+          			isa = PBXGroup;
+          			path = V5iOS;
+          			sourceTree = "<group>";
+          			children = (
+          				D00000000000000000000003 /* App */,
+          				D00000000000000000000004 /* Core */,
+          				D00000000000000000000005 /* UI */,
+          				D00000000000000000000007 /* Runtime */,
+          				B00000000000000000000006 /* Info.plist */,
+          				B00000000000000000000011 /* Assets.xcassets */,
+          			);
+          		};
+          		D00000000000000000000003 /* App */ = {
+          			isa = PBXGroup;
+          			path = App;
+          			sourceTree = "<group>";
+          			children = (B00000000000000000000001 /* V5iOSApp.swift */);
+          		};
+          		D00000000000000000000004 /* Core */ = {
+          			isa = PBXGroup;
+          			path = Core;
+          			sourceTree = "<group>";
+          			children = (
+          				B00000000000000000000004 /* DeviceProbe.swift */,
+          				B00000000000000000000005 /* GameFolderScanner.swift */,
+          				B00000000000000000000008 /* VulkanProbe.swift */,
+          				B00000000000000000000009 /* VulkanProbe.c */,
+          				B00000000000000000000010 /* VulkanProbeBridge.h */,
+          			);
+          		};
+          		D00000000000000000000005 /* UI */ = {
+          			isa = PBXGroup;
+          			path = UI;
+          			sourceTree = "<group>";
+          			children = (
+          				B00000000000000000000002 /* ContentView.swift */,
+          				B00000000000000000000003 /* FolderPicker.swift */,
+          			);
+          		};
 
-		D00000000000000000000007 /* Runtime */ = {
-			isa = PBXGroup;
-			path = Runtime;
-			sourceTree = "<group>";
-			children = (
-				B00000000000000000000012 /* V5CPUProbe.swift */,
-				B00000000000000000000013 /* V5CPUCore.cpp */,
-				B00000000000000000000014 /* V5CPUBridge.h */,
-				B00000000000000000000015 /* PEImage.swift */,
-				B00000000000000000000016 /* MetalPipelineProbe.swift */,
-				B00000000000000000000017 /* JITCapability.swift */,
-				B00000000000000000000018 /* RuntimeMemoryProbe.swift */,
-				B00000000000000000000019 /* RuntimeBookmarkStore.swift */,
-				B00000000000000000000020 /* V5RuntimeCoordinator.swift */,
-				B00000000000000000000021 /* RuntimeDashboardView.swift */,
-			);
-		};
-		D00000000000000000000006 /* Products */ = {
-			isa = PBXGroup;
-			name = Products;
-			sourceTree = "<group>";
-			children = (B00000000000000000000007 /* V5iOS.app */);
-		};
-/* End PBXGroup section */
+          		D00000000000000000000007 /* Runtime */ = {
+          			isa = PBXGroup;
+          			path = Runtime;
+          			sourceTree = "<group>";
+          			children = (
+          				B00000000000000000000012 /* V5CPUProbe.swift */,
+          				B00000000000000000000013 /* V5CPUCore.cpp */,
+          				B00000000000000000000014 /* V5CPUBridge.h */,
+          				B00000000000000000000015 /* PEImage.swift */,
+          				B00000000000000000000016 /* MetalPipelineProbe.swift */,
+          				B00000000000000000000017 /* JITCapability.swift */,
+          				B00000000000000000000018 /* RuntimeMemoryProbe.swift */,
+          				B00000000000000000000019 /* RuntimeBookmarkStore.swift */,
+          				B00000000000000000000020 /* V5RuntimeCoordinator.swift */,
+          				B00000000000000000000021 /* RuntimeDashboardView.swift */,
+          			);
+          		};
+          		D00000000000000000000006 /* Products */ = {
+          			isa = PBXGroup;
+          			name = Products;
+          			sourceTree = "<group>";
+          			children = (B00000000000000000000007 /* V5iOS.app */);
+          		};
+          /* End PBXGroup section */
 
-/* Begin PBXNativeTarget section */
-		E00000000000000000000001 /* V5iOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F00000000000000000000002 /* Build configuration list for PBXNativeTarget "V5iOS" */;
-			buildPhases = (
-				C00000000000000000000002 /* Sources */,
-				C00000000000000000000001 /* Frameworks */,
-				C00000000000000000000003 /* Resources */,
-			);
-			buildRules = ();
-			dependencies = ();
-			name = V5iOS;
-			productName = V5iOS;
-			productReference = B00000000000000000000007 /* V5iOS.app */;
-			productType = "com.apple.product-type.application";
-		};
-/* End PBXNativeTarget section */
+          /* Begin PBXNativeTarget section */
+          		E00000000000000000000001 /* V5iOS */ = {
+          			isa = PBXNativeTarget;
+          			buildConfigurationList = F00000000000000000000002 /* Build configuration list for PBXNativeTarget "V5iOS" */;
+          			buildPhases = (
+          				C00000000000000000000002 /* Sources */,
+          				C00000000000000000000001 /* Frameworks */,
+          				C00000000000000000000003 /* Resources */,
+          			);
+          			buildRules = ();
+          			dependencies = ();
+          			name = V5iOS;
+          			productName = V5iOS;
+          			productReference = B00000000000000000000007 /* V5iOS.app */;
+          			productType = "com.apple.product-type.application";
+          		};
+          /* End PBXNativeTarget section */
 
-/* Begin PBXProject section */
-		E00000000000000000000002 /* Project object */ = {
-			isa = PBXProject;
-			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
-				TargetAttributes = { E00000000000000000000001 = { CreatedOnToolsVersion = 16.0; }; };
-			};
-			buildConfigurationList = F00000000000000000000001 /* Build configuration list for PBXProject "V5iOS" */;
-			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
-			hasScannedForEncodings = 0;
-			knownRegions = (en, Base);
-			mainGroup = D00000000000000000000001;
-			productRefGroup = D00000000000000000000006 /* Products */;
-			projectDirPath = "";
-			projectRoot = "";
-			targets = (E00000000000000000000001 /* V5iOS */);
-		};
-/* End PBXProject section */
+          /* Begin PBXProject section */
+          		E00000000000000000000002 /* Project object */ = {
+          			isa = PBXProject;
+          			attributes = {
+          				BuildIndependentTargetsInParallel = 1;
+          				LastSwiftUpdateCheck = 1600;
+          				LastUpgradeCheck = 1600;
+          				TargetAttributes = { E00000000000000000000001 = { CreatedOnToolsVersion = 16.0; }; };
+          			};
+          			buildConfigurationList = F00000000000000000000001 /* Build configuration list for PBXProject "V5iOS" */;
+          			compatibilityVersion = "Xcode 14.0";
+          			developmentRegion = en;
+          			hasScannedForEncodings = 0;
+          			knownRegions = (en, Base);
+          			mainGroup = D00000000000000000000001;
+          			productRefGroup = D00000000000000000000006 /* Products */;
+          			projectDirPath = "";
+          			projectRoot = "";
+          			targets = (E00000000000000000000001 /* V5iOS */);
+          		};
+          /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		C00000000000000000000003 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A00000000000000000000008 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
+          /* Begin PBXResourcesBuildPhase section */
+          		C00000000000000000000003 /* Resources */ = {
+          			isa = PBXResourcesBuildPhase;
+          			buildActionMask = 2147483647;
+          			files = (
+          				A00000000000000000000008 /* Assets.xcassets in Resources */,
+          			);
+          			runOnlyForDeploymentPostprocessing = 0;
+          		};
+          /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXSourcesBuildPhase section */
-		C00000000000000000000002 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A00000000000000000000001 /* V5iOSApp.swift in Sources */,
-				A00000000000000000000002 /* ContentView.swift in Sources */,
-				A00000000000000000000003 /* FolderPicker.swift in Sources */,
-				A00000000000000000000004 /* DeviceProbe.swift in Sources */,
-				A00000000000000000000005 /* GameFolderScanner.swift in Sources */,
-				A00000000000000000000006 /* VulkanProbe.swift in Sources */,
-				A00000000000000000000007 /* VulkanProbe.c in Sources */,
-				A00000000000000000000009 /* V5CPUProbe.swift in Sources */,
-				A00000000000000000000010 /* V5CPUCore.cpp in Sources */,
-				A00000000000000000000011 /* PEImage.swift in Sources */,
-				A00000000000000000000012 /* MetalPipelineProbe.swift in Sources */,
-				A00000000000000000000013 /* JITCapability.swift in Sources */,
-				A00000000000000000000014 /* RuntimeMemoryProbe.swift in Sources */,
-				A00000000000000000000015 /* RuntimeBookmarkStore.swift in Sources */,
-				A00000000000000000000016 /* V5RuntimeCoordinator.swift in Sources */,
-				A00000000000000000000017 /* RuntimeDashboardView.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXSourcesBuildPhase section */
+          /* Begin PBXSourcesBuildPhase section */
+          		C00000000000000000000002 /* Sources */ = {
+          			isa = PBXSourcesBuildPhase;
+          			buildActionMask = 2147483647;
+          			files = (
+          				A00000000000000000000001 /* V5iOSApp.swift in Sources */,
+          				A00000000000000000000002 /* ContentView.swift in Sources */,
+          				A00000000000000000000003 /* FolderPicker.swift in Sources */,
+          				A00000000000000000000004 /* DeviceProbe.swift in Sources */,
+          				A00000000000000000000005 /* GameFolderScanner.swift in Sources */,
+          				A00000000000000000000006 /* VulkanProbe.swift in Sources */,
+          				A00000000000000000000007 /* VulkanProbe.c in Sources */,
+          				A00000000000000000000009 /* V5CPUProbe.swift in Sources */,
+          				A00000000000000000000010 /* V5CPUCore.cpp in Sources */,
+          				A00000000000000000000011 /* PEImage.swift in Sources */,
+          				A00000000000000000000012 /* MetalPipelineProbe.swift in Sources */,
+          				A00000000000000000000013 /* JITCapability.swift in Sources */,
+          				A00000000000000000000014 /* RuntimeMemoryProbe.swift in Sources */,
+          				A00000000000000000000015 /* RuntimeBookmarkStore.swift in Sources */,
+          				A00000000000000000000016 /* V5RuntimeCoordinator.swift in Sources */,
+          				A00000000000000000000017 /* RuntimeDashboardView.swift in Sources */,
+          			);
+          			runOnlyForDeploymentPostprocessing = 0;
+          		};
+          /* End PBXSourcesBuildPhase section */
 
-/* Begin XCBuildConfiguration section */
-		G00000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
-			ALWAYS_SEARCH_USER_PATHS = NO;
-			CLANG_ENABLE_MODULES = YES;
-			CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-			CLANG_CXX_LIBRARY = "libc++";
-			ENABLE_STRICT_OBJC_MSGSEND = YES;
-			GCC_C_LANGUAGE_STANDARD = gnu17;
-			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-			SDKROOT = iphoneos;
-			SWIFT_VERSION = 5.0;
-		}; name = Debug; };
-		G00000000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
-			ALWAYS_SEARCH_USER_PATHS = NO;
-			CLANG_ENABLE_MODULES = YES;
-			CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-			CLANG_CXX_LIBRARY = "libc++";
-			ENABLE_NS_ASSERTIONS = NO;
-			ENABLE_STRICT_OBJC_MSGSEND = YES;
-			GCC_C_LANGUAGE_STANDARD = gnu17;
-			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-			SDKROOT = iphoneos;
-			SWIFT_COMPILATION_MODE = wholemodule;
-			SWIFT_OPTIMIZATION_LEVEL = "-O";
-			SWIFT_VERSION = 5.0;
-		}; name = Release; };
-		G00000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
-			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-			CODE_SIGN_STYLE = Automatic;
-			CURRENT_PROJECT_VERSION = 20;
-			GENERATE_INFOPLIST_FILE = NO;
-			INFOPLIST_FILE = V5iOS/Info.plist;
-			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-			MARKETING_VERSION = 2.0;
-			PRODUCT_BUNDLE_IDENTIFIER = com.v5ios.launcher;
-			PRODUCT_NAME = "$(TARGET_NAME)";
-			SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-			SUPPORTS_MACCATALYST = NO;
-			SWIFT_EMIT_LOC_STRINGS = YES;
-			SWIFT_OBJC_BRIDGING_HEADER = V5iOS/Core/VulkanProbeBridge.h;
-			SWIFT_VERSION = 5.0;
-			TARGETED_DEVICE_FAMILY = "1,2";
-		}; name = Debug; };
-		G00000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
-			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-			CODE_SIGN_STYLE = Automatic;
-			CURRENT_PROJECT_VERSION = 20;
-			GENERATE_INFOPLIST_FILE = NO;
-			INFOPLIST_FILE = V5iOS/Info.plist;
-			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-			MARKETING_VERSION = 2.0;
-			PRODUCT_BUNDLE_IDENTIFIER = com.v5ios.launcher;
-			PRODUCT_NAME = "$(TARGET_NAME)";
-			SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-			SUPPORTS_MACCATALYST = NO;
-			SWIFT_EMIT_LOC_STRINGS = YES;
-			SWIFT_OBJC_BRIDGING_HEADER = V5iOS/Core/VulkanProbeBridge.h;
-			SWIFT_VERSION = 5.0;
-			TARGETED_DEVICE_FAMILY = "1,2";
-		}; name = Release; };
-/* End XCBuildConfiguration section */
+          /* Begin XCBuildConfiguration section */
+          		G00000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+          			ALWAYS_SEARCH_USER_PATHS = NO;
+          			CLANG_ENABLE_MODULES = YES;
+          			CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+          			CLANG_CXX_LIBRARY = "libc++";
+          			ENABLE_STRICT_OBJC_MSGSEND = YES;
+          			GCC_C_LANGUAGE_STANDARD = gnu17;
+          			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+          			SDKROOT = iphoneos;
+          			SWIFT_VERSION = 5.0;
+          		}; name = Debug; };
+          		G00000000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+          			ALWAYS_SEARCH_USER_PATHS = NO;
+          			CLANG_ENABLE_MODULES = YES;
+          			CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+          			CLANG_CXX_LIBRARY = "libc++";
+          			ENABLE_NS_ASSERTIONS = NO;
+          			ENABLE_STRICT_OBJC_MSGSEND = YES;
+          			GCC_C_LANGUAGE_STANDARD = gnu17;
+          			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+          			SDKROOT = iphoneos;
+          			SWIFT_COMPILATION_MODE = wholemodule;
+          			SWIFT_OPTIMIZATION_LEVEL = "-O";
+          			SWIFT_VERSION = 5.0;
+          		}; name = Release; };
+          		G00000000000000000000003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+          			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+          			CODE_SIGN_STYLE = Automatic;
+          			CURRENT_PROJECT_VERSION = 20;
+          			GENERATE_INFOPLIST_FILE = NO;
+          			INFOPLIST_FILE = V5iOS/Info.plist;
+          			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+          			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+          			MARKETING_VERSION = 2.0;
+          			PRODUCT_BUNDLE_IDENTIFIER = com.v5ios.launcher;
+          			PRODUCT_NAME = "$(TARGET_NAME)";
+          			SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+          			SUPPORTS_MACCATALYST = NO;
+          			SWIFT_EMIT_LOC_STRINGS = YES;
+          			SWIFT_OBJC_BRIDGING_HEADER = V5iOS/Core/VulkanProbeBridge.h;
+          			SWIFT_VERSION = 5.0;
+          			TARGETED_DEVICE_FAMILY = "1,2";
+          		}; name = Debug; };
+          		G00000000000000000000004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+          			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+          			CODE_SIGN_STYLE = Automatic;
+          			CURRENT_PROJECT_VERSION = 20;
+          			GENERATE_INFOPLIST_FILE = NO;
+          			INFOPLIST_FILE = V5iOS/Info.plist;
+          			IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+          			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+          			MARKETING_VERSION = 2.0;
+          			PRODUCT_BUNDLE_IDENTIFIER = com.v5ios.launcher;
+          			PRODUCT_NAME = "$(TARGET_NAME)";
+          			SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+          			SUPPORTS_MACCATALYST = NO;
+          			SWIFT_EMIT_LOC_STRINGS = YES;
+          			SWIFT_OBJC_BRIDGING_HEADER = V5iOS/Core/VulkanProbeBridge.h;
+          			SWIFT_VERSION = 5.0;
+          			TARGETED_DEVICE_FAMILY = "1,2";
+          		}; name = Release; };
+          /* End XCBuildConfiguration section */
 
-/* Begin XCConfigurationList section */
-		F00000000000000000000001 /* Build configuration list for PBXProject "V5iOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (G00000000000000000000001 /* Debug */, G00000000000000000000002 /* Release */);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F00000000000000000000002 /* Build configuration list for PBXNativeTarget "V5iOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (G00000000000000000000003 /* Debug */, G00000000000000000000004 /* Release */);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-/* End XCConfigurationList section */
-	};
-	rootObject = E00000000000000000000002 /* Project object */;
-}
-V5EOF00
+          /* Begin XCConfigurationList section */
+          		F00000000000000000000001 /* Build configuration list for PBXProject "V5iOS" */ = {
+          			isa = XCConfigurationList;
+          			buildConfigurations = (G00000000000000000000001 /* Debug */, G00000000000000000000002 /* Release */);
+          			defaultConfigurationIsVisible = 0;
+          			defaultConfigurationName = Release;
+          		};
+          		F00000000000000000000002 /* Build configuration list for PBXNativeTarget "V5iOS" */ = {
+          			isa = XCConfigurationList;
+          			buildConfigurations = (G00000000000000000000003 /* Debug */, G00000000000000000000004 /* Release */);
+          			defaultConfigurationIsVisible = 0;
+          			defaultConfigurationName = Release;
+          		};
+          /* End XCConfigurationList section */
+          	};
+          	rootObject = E00000000000000000000002 /* Project object */;
+          }
+          V5EOF00
           mkdir -p "$(dirname 'V5iOS/Info.plist')"
           cat > 'V5iOS/Info.plist' <<'V5EOF01'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>CFBundleDisplayName</key>
-	<string>V5iOS</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>2.0</string>
-	<key>CFBundleVersion</key>
-	<string>200</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>© 2026 Ali Tahseen. All rights reserved.</string>
-	<key>CFBundleGetInfoString</key>
-	<string>V5iOS v2.0 Runtime Core — Built by AELLE STORE • © 2026 Ali Tahseen</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
-	<key>UIFileSharingEnabled</key>
-	<true/>
-	<key>UILaunchScreen</key>
-	<dict/>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-</dict>
-</plist>
-V5EOF01
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+          	<key>CFBundleDisplayName</key>
+          	<string>V5iOS</string>
+          	<key>CFBundleExecutable</key>
+          	<string>$(EXECUTABLE_NAME)</string>
+          	<key>CFBundleIdentifier</key>
+          	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+          	<key>CFBundleInfoDictionaryVersion</key>
+          	<string>6.0</string>
+          	<key>CFBundleName</key>
+          	<string>$(PRODUCT_NAME)</string>
+          	<key>CFBundlePackageType</key>
+          	<string>APPL</string>
+          	<key>CFBundleShortVersionString</key>
+          	<string>2.0</string>
+          	<key>CFBundleVersion</key>
+          	<string>200</string>
+          	<key>NSHumanReadableCopyright</key>
+          	<string>© 2026 Ali Tahseen. All rights reserved.</string>
+          	<key>CFBundleGetInfoString</key>
+          	<string>V5iOS v2.0 Runtime Core — Built by AELLE STORE • © 2026 Ali Tahseen</string>
+          	<key>LSRequiresIPhoneOS</key>
+          	<true/>
+          	<key>LSSupportsOpeningDocumentsInPlace</key>
+          	<true/>
+          	<key>UIFileSharingEnabled</key>
+          	<true/>
+          	<key>UILaunchScreen</key>
+          	<dict/>
+          	<key>UISupportedInterfaceOrientations</key>
+          	<array>
+          		<string>UIInterfaceOrientationPortrait</string>
+          		<string>UIInterfaceOrientationLandscapeLeft</string>
+          		<string>UIInterfaceOrientationLandscapeRight</string>
+          	</array>
+          	<key>UIApplicationSupportsIndirectInputEvents</key>
+          	<true/>
+          </dict>
+          </plist>
+          V5EOF01
           mkdir -p "$(dirname 'V5iOS/UI/ContentView.swift')"
           cat > 'V5iOS/UI/ContentView.swift' <<'V5EOF02'
-import SwiftUI
-import GameController
+          import SwiftUI
+          import GameController
 
-struct ContentView: View {
-    enum Tab: Hashable {
-        case home, runtime, graphics, system, controller, files
-    }
+          struct ContentView: View {
+          enum Tab: Hashable {
+          case home, runtime, graphics, system, controller, files
+          }
 
-    @State private var selection: Tab = .home
-    @StateObject private var runtime = V5RuntimeCoordinator()
-    @State private var showRuntimeAlert = false
-    @State private var showFolderPicker = false
-    @State private var scanResult: GameScanResult?
-    @State private var vulkanResult: VulkanProbeResult?
-    @State private var vulkanRunning = false
-    @State private var controllerName = "No controller connected"
+          @State private var selection: Tab = .home
+          @StateObject private var runtime = V5RuntimeCoordinator()
+          @State private var showRuntimeAlert = false
+          @State private var showFolderPicker = false
+          @State private var scanResult: GameScanResult?
+          @State private var vulkanResult: VulkanProbeResult?
+          @State private var vulkanRunning = false
+          @State private var controllerName = "No controller connected"
 
-    @AppStorage("resolutionScale") private var resolutionScale = 1.0
-    @AppStorage("vsync") private var vsync = true
-    @AppStorage("frameLimit") private var frameLimit = 60.0
-    @AppStorage("anisotropic") private var anisotropic = 16.0
-    @AppStorage("shadows") private var shadows = true
-    @AppStorage("reflections") private var reflections = true
-    @AppStorage("motionBlur") private var motionBlur = false
-    @AppStorage("controllerEnabled") private var controllerEnabled = true
-    @AppStorage("controllerVibration") private var controllerVibration = true
-    @AppStorage("buttonPrompts") private var buttonPrompts = true
-    @AppStorage("lookSensitivity") private var lookSensitivity = 1.0
-    @AppStorage("aimSensitivity") private var aimSensitivity = 1.0
+          @AppStorage("resolutionScale") private var resolutionScale = 1.0
+          @AppStorage("vsync") private var vsync = true
+          @AppStorage("frameLimit") private var frameLimit = 60.0
+          @AppStorage("anisotropic") private var anisotropic = 16.0
+          @AppStorage("shadows") private var shadows = true
+          @AppStorage("reflections") private var reflections = true
+          @AppStorage("motionBlur") private var motionBlur = false
+          @AppStorage("controllerEnabled") private var controllerEnabled = true
+          @AppStorage("controllerVibration") private var controllerVibration = true
+          @AppStorage("buttonPrompts") private var buttonPrompts = true
+          @AppStorage("lookSensitivity") private var lookSensitivity = 1.0
+          @AppStorage("aimSensitivity") private var aimSensitivity = 1.0
 
-    private let report = DeviceProbe.current()
-    private let green = Color(red: 0.04, green: 0.72, blue: 0.43)
-    private let darkGreen = Color(red: 0.015, green: 0.09, blue: 0.075)
-    private let gold = Color(red: 0.92, green: 0.72, blue: 0.34)
+          private let report = DeviceProbe.current()
+          private let green = Color(red: 0.04, green: 0.72, blue: 0.43)
+          private let darkGreen = Color(red: 0.015, green: 0.09, blue: 0.075)
+          private let gold = Color(red: 0.92, green: 0.72, blue: 0.34)
 
-    var body: some View {
-        ZStack {
+          var body: some View {
+          ZStack {
             LinearGradient(
                 gradient: Gradient(colors: [darkGreen, Color.black]),
                 startPoint: .topLeading,
@@ -442,22 +442,22 @@ struct ContentView: View {
                     .tabItem { Label("Files", systemImage: "folder.fill") }
             }
             .accentColor(green)
-        }
-        .preferredColorScheme(.dark)
-        .sheet(isPresented: $showFolderPicker) {
+          }
+          .preferredColorScheme(.dark)
+          .sheet(isPresented: $showFolderPicker) {
             FolderPicker { url in
                 scanResult = GameFolderScanner.scan(url: url)
                 runtime.select(folder: url)
                 showFolderPicker = false
             }
-        }
-        .onAppear {
+          }
+          .onAppear {
             refreshController()
-        }
-    }
+          }
+          }
 
-    private var homeView: some View {
-        NavigationView {
+          private var homeView: some View {
+          NavigationView {
             ScrollView {
                 VStack(spacing: 18) {
                     heroCard
@@ -469,12 +469,12 @@ struct ContentView: View {
                 .padding(16)
             }
             .navigationBarHidden(true)
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
+          }
+          .navigationViewStyle(StackNavigationViewStyle())
+          }
 
-    private var heroCard: some View {
-        VStack(spacing: 14) {
+          private var heroCard: some View {
+          VStack(spacing: 14) {
             HStack(spacing: 14) {
                 Image("BrandLogo")
                     .resizable()
@@ -524,23 +524,23 @@ struct ContentView: View {
                 .foregroundColor(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
-        }
-        .padding(18)
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(gold.opacity(0.18), lineWidth: 1))
-    }
+          }
+          .padding(18)
+          .background(cardBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+          .overlay(RoundedRectangle(cornerRadius: 24).stroke(gold.opacity(0.18), lineWidth: 1))
+          }
 
-    private var quickStatus: some View {
-        HStack(spacing: 10) {
+          private var quickStatus: some View {
+          HStack(spacing: 10) {
             statusTile("Metal", report.metalAvailable ? "Ready" : "Unavailable", "cpu")
             statusTile("GPU", "A15", "memorychip")
             statusTile("RAM", String(format: "%.1f GB", report.physicalMemoryGB), "rectangle.3.group")
-        }
-    }
+          }
+          }
 
-    private var menuCard: some View {
-        VStack(spacing: 0) {
+          private var menuCard: some View {
+          VStack(spacing: 0) {
             menuRow("V5 Runtime Engine", icon: "cpu.fill", tab: .runtime)
             divider
             menuRow("Graphics Settings", icon: "gearshape.2.fill", tab: .graphics)
@@ -550,13 +550,13 @@ struct ContentView: View {
             menuRow("Controller", icon: "gamecontroller.fill", tab: .controller)
             divider
             menuRow("Game Files", icon: "folder.fill", tab: .files)
-        }
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-    }
+          }
+          .background(cardBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+          }
 
-    private var graphicsView: some View {
-        screen(title: "Graphics Settings", subtitle: "Stored presets for the future runtime") {
+          private var graphicsView: some View {
+          screen(title: "Graphics Settings", subtitle: "Stored presets for the future runtime") {
             settingCard {
                 sliderRow("Resolution Scale", value: $resolutionScale, range: 0.5...1.0, suffix: "%", multiplier: 100)
                 divider
@@ -574,11 +574,11 @@ struct ContentView: View {
             }
 
             noteCard("These controls are saved locally. They are UI presets only until a compatible game runtime is implemented.")
-        }
-    }
+          }
+          }
 
-    private var systemView: some View {
-        screen(title: "Vulkan / System Info", subtitle: "Real MoltenVK diagnostics") {
+          private var systemView: some View {
+          screen(title: "Vulkan / System Info", subtitle: "Real MoltenVK diagnostics") {
             settingCard {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
@@ -642,11 +642,11 @@ struct ContentView: View {
                 }
                 infoRow("Thermal", report.thermalState)
             }
-        }
-    }
+          }
+          }
 
-    private var controllerView: some View {
-        screen(title: "Controller", subtitle: controllerName) {
+          private var controllerView: some View {
+          screen(title: "Controller", subtitle: controllerName) {
             settingCard {
                 HStack(spacing: 16) {
                     Image(systemName: "gamecontroller.fill")
@@ -676,11 +676,11 @@ struct ContentView: View {
                 divider
                 sliderRow("Aim Sensitivity", value: $aimSensitivity, range: 0.25...2.0, suffix: "", multiplier: 1)
             }
-        }
-    }
+          }
+          }
 
-    private var filesView: some View {
-        screen(title: "Game Files", subtitle: "Use only game data you legally own") {
+          private var filesView: some View {
+          screen(title: "Game Files", subtitle: "Use only game data you legally own") {
             settingCard {
                 Image(systemName: "folder.fill")
                     .font(.system(size: 54))
@@ -732,11 +732,11 @@ struct ContentView: View {
                     }
                 }
             }
-        }
-    }
+          }
+          }
 
-    private var socialCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+          private var socialCard: some View {
+          VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("بواسطة")
                     .foregroundColor(.secondary)
@@ -759,14 +759,14 @@ struct ContentView: View {
                 }
                 .buttonStyle(.bordered)
             }
-        }
-        .padding(16)
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-    }
+          }
+          .padding(16)
+          .background(cardBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+          }
 
-    private var copyrightFooter: some View {
-        VStack(spacing: 4) {
+          private var copyrightFooter: some View {
+          VStack(spacing: 4) {
             Text("© 2026 Ali Tahseen")
                 .font(.caption.bold())
             Text("V5iOS Runtime Core • AELLE STORE • All rights reserved")
@@ -775,13 +775,13 @@ struct ContentView: View {
             Text("Not affiliated with Rockstar Games or Take-Two Interactive.")
                 .font(.caption2)
                 .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-    }
+          }
+          .frame(maxWidth: .infinity)
+          .padding(.vertical, 10)
+          }
 
-    private func screen<Content: View>(title: String, subtitle: String, @ViewBuilder content: () -> Content) -> some View {
-        NavigationView {
+          private func screen<Content: View>(title: String, subtitle: String, @ViewBuilder content: () -> Content) -> some View {
+          NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 3) {
@@ -796,32 +796,32 @@ struct ContentView: View {
                 .padding(16)
             }
             .navigationBarHidden(true)
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
+          }
+          .navigationViewStyle(StackNavigationViewStyle())
+          }
 
-    private func settingCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+          private func settingCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+          VStack(alignment: .leading, spacing: 14) {
             content()
-        }
-        .padding(16)
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.05), lineWidth: 1))
-    }
+          }
+          .padding(16)
+          .background(cardBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+          .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.05), lineWidth: 1))
+          }
 
-    private func noteCard(_ text: String) -> some View {
-        Text(text)
+          private func noteCard(_ text: String) -> some View {
+          Text(text)
             .font(.caption)
             .foregroundColor(.secondary)
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.white.opacity(0.035))
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-    }
+          }
 
-    private func statusTile(_ title: String, _ value: String, _ icon: String) -> some View {
-        VStack(spacing: 6) {
+          private func statusTile(_ title: String, _ value: String, _ icon: String) -> some View {
+          VStack(spacing: 6) {
             Image(systemName: icon)
                 .foregroundColor(gold)
             Text(title)
@@ -830,27 +830,27 @@ struct ContentView: View {
             Text(value)
                 .font(.caption.bold())
                 .lineLimit(1)
-        }
-        .padding(.vertical, 12)
-        .frame(maxWidth: .infinity)
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
+          }
+          .padding(.vertical, 12)
+          .frame(maxWidth: .infinity)
+          .background(cardBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+          }
 
-    private func badge(_ text: String, icon: String) -> some View {
-        Label(text, systemImage: icon)
+          private func badge(_ text: String, icon: String) -> some View {
+          Label(text, systemImage: icon)
             .font(.caption2.bold())
             .padding(.horizontal, 9)
             .padding(.vertical, 6)
             .background(Color.white.opacity(0.07))
             .clipShape(Capsule())
             .lineLimit(1)
-    }
+          }
 
-    private func menuRow(_ title: String, icon: String, tab: Tab) -> some View {
-        Button {
+          private func menuRow(_ title: String, icon: String, tab: Tab) -> some View {
+          Button {
             selection = tab
-        } label: {
+          } label: {
             HStack(spacing: 13) {
                 Image(systemName: icon)
                     .frame(width: 26)
@@ -863,21 +863,21 @@ struct ContentView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 15)
-        }
-    }
+          }
+          }
 
-    private func toggleRow(_ title: String, isOn: Binding<Bool>) -> some View {
-        HStack {
+          private func toggleRow(_ title: String, isOn: Binding<Bool>) -> some View {
+          HStack {
             Text(title)
             Spacer()
             Toggle("", isOn: isOn)
                 .labelsHidden()
                 .tint(green)
-        }
-    }
+          }
+          }
 
-    private func sliderRow(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, suffix: String, multiplier: Double, step: Double? = nil) -> some View {
-        VStack(spacing: 8) {
+          private func sliderRow(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, suffix: String, multiplier: Double, step: Double? = nil) -> some View {
+          VStack(spacing: 8) {
             HStack {
                 Text(title)
                 Spacer()
@@ -892,89 +892,89 @@ struct ContentView: View {
                 Slider(value: value, in: range)
                     .tint(green)
             }
-        }
-    }
+          }
+          }
 
-    private func infoRow(_ key: String, _ value: String) -> some View {
-        HStack(alignment: .top) {
+          private func infoRow(_ key: String, _ value: String) -> some View {
+          HStack(alignment: .top) {
             Text(key)
                 .foregroundColor(.secondary)
             Spacer(minLength: 18)
             Text(value)
                 .multilineTextAlignment(.trailing)
                 .font(.system(.body, design: .monospaced))
-        }
-    }
+          }
+          }
 
-    private var divider: some View {
-        Divider().background(Color.white.opacity(0.08))
-    }
+          private var divider: some View {
+          Divider().background(Color.white.opacity(0.08))
+          }
 
-    private var cardBackground: some View {
-        LinearGradient(
+          private var cardBackground: some View {
+          LinearGradient(
             gradient: Gradient(colors: [Color.white.opacity(0.085), Color.white.opacity(0.035)]),
             startPoint: .topLeading,
             endPoint: .bottomTrailing
-        )
-    }
+          )
+          }
 
-    private func formatValue(_ value: Double, suffix: String) -> String {
-        if suffix == "%" || suffix == " FPS" || suffix == "x" {
+          private func formatValue(_ value: Double, suffix: String) -> String {
+          if suffix == "%" || suffix == " FPS" || suffix == "x" {
             return "\(Int(value.rounded()))\(suffix)"
-        }
-        return String(format: "%.2f%@", value, suffix)
-    }
+          }
+          return String(format: "%.2f%@", value, suffix)
+          }
 
-    private func runVulkanProbe() {
-        vulkanRunning = true
-        vulkanResult = nil
-        DispatchQueue.global(qos: .userInitiated).async {
+          private func runVulkanProbe() {
+          vulkanRunning = true
+          vulkanResult = nil
+          DispatchQueue.global(qos: .userInitiated).async {
             let result = VulkanProbe.run()
             DispatchQueue.main.async {
                 vulkanResult = result
                 vulkanRunning = false
             }
-        }
-    }
+          }
+          }
 
-    private func refreshController() {
-        controllerName = GCController.controllers().first?.vendorName ?? "No controller connected"
-    }
-}
-V5EOF02
+          private func refreshController() {
+          controllerName = GCController.controllers().first?.vendorName ?? "No controller connected"
+          }
+          }
+          V5EOF02
           mkdir -p "$(dirname 'V5iOS/Core/GameFolderScanner.swift')"
           cat > 'V5iOS/Core/GameFolderScanner.swift' <<'V5EOF03'
-import Foundation
+          import Foundation
 
-struct GameScanResult {
-    let rootName: String
-    let accessible: Bool
-    let markerHits: [String]
-    let missingMarkers: [String]
-    let topLevelEntries: Int
-    let estimatedTopLevelSizeGB: Double
-    let notes: [String]
-}
+          struct GameScanResult {
+          let rootName: String
+          let accessible: Bool
+          let markerHits: [String]
+          let missingMarkers: [String]
+          let topLevelEntries: Int
+          let estimatedTopLevelSizeGB: Double
+          let notes: [String]
+          }
 
-enum GameFolderScanner {
-    // These are only data-layout markers. No Rockstar files are bundled by V5iOS.
-    private static let markers = [
-        "GTA5.exe",
-        "x64a.rpf",
-        "x64b.rpf",
-        "x64c.rpf",
-        "update/update.rpf"
-    ]
+          enum GameFolderScanner {
+          // These are only data-layout markers. No Rockstar files are bundled by V5iOS.
+          private static let markers = [
+          "GTA5.exe",
+          "x64a.rpf",
+          "x64b.rpf",
+          "x64c.rpf",
+          "update/update.rpf"
+          ]
 
-    static func scan(url: URL) -> GameScanResult {
-        let didAccess = url.startAccessingSecurityScopedResource()
-        defer {
+          static func scan(url: URL) -> GameScanResult {
+          let didAccess = url.startAccessingSecurityScopedResource()
+          defer {
             if didAccess { url.stopAccessingSecurityScopedResource() }
-        }
+          }
 
-        var isDirectory: ObjCBool = false
-        let exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
-        guard exists, isDirectory.boolValue else {
+          var isDirectory: ObjCBool = false
+          let exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
+          guard exists, isDirectory.boolValue else {
             return GameScanResult(
                 rootName: url.lastPathComponent,
                 accessible: false,
@@ -984,37 +984,37 @@ enum GameFolderScanner {
                 estimatedTopLevelSizeGB: 0,
                 notes: ["The selected URL is not an accessible directory."]
             )
-        }
+          }
 
-        var hits: [String] = []
-        for marker in markers {
+          var hits: [String] = []
+          for marker in markers {
             let markerURL = url.appendingPathComponent(marker)
             if FileManager.default.fileExists(atPath: markerURL.path) {
                 hits.append(marker)
             }
-        }
+          }
 
-        let entries = (try? FileManager.default.contentsOfDirectory(
+          let entries = (try? FileManager.default.contentsOfDirectory(
             at: url,
             includingPropertiesForKeys: [.fileSizeKey, .isRegularFileKey],
             options: [.skipsHiddenFiles]
-        )) ?? []
+          )) ?? []
 
-        var bytes: Int64 = 0
-        for entry in entries {
+          var bytes: Int64 = 0
+          for entry in entries {
             guard let values = try? entry.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey]),
                   values.isRegularFile == true,
                   let size = values.fileSize else { continue }
             bytes += Int64(size)
-        }
+          }
 
-        var notes: [String] = []
-        if hits.count < markers.count {
+          var notes: [String] = []
+          if hits.count < markers.count {
             notes.append("This does not prove the data is invalid; Android-native GTA V runtimes can use a specific data layout/version.")
-        }
-        notes.append("V5iOS v2.0 inspects metadata and PE headers only. It does not modify game files.")
+          }
+          notes.append("V5iOS v2.0 inspects metadata and PE headers only. It does not modify game files.")
 
-        return GameScanResult(
+          return GameScanResult(
             rootName: url.lastPathComponent,
             accessible: true,
             markerHits: hits,
@@ -1022,95 +1022,95 @@ enum GameFolderScanner {
             topLevelEntries: entries.count,
             estimatedTopLevelSizeGB: Double(bytes) / 1_073_741_824.0,
             notes: notes
-        )
-    }
-}
-V5EOF03
+          )
+          }
+          }
+          V5EOF03
           mkdir -p "$(dirname 'V5iOS/Core/VulkanProbeBridge.h')"
           cat > 'V5iOS/Core/VulkanProbeBridge.h' <<'V5EOF04'
-#ifndef VulkanProbeBridge_h
-#define VulkanProbeBridge_h
+          #ifndef VulkanProbeBridge_h
+          #define VulkanProbeBridge_h
 
-#include <stdint.h>
-#include "../Runtime/CPU/V5CPUBridge.h"
+          #include <stdint.h>
+          #include "../Runtime/CPU/V5CPUBridge.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+          #ifdef __cplusplus
+          extern "C" {
+          #endif
 
-int V5VulkanRunProbe(void);
-const char *V5VulkanStatus(void);
-const char *V5VulkanDeviceName(void);
-uint32_t V5VulkanAPIVersion(void);
-uint32_t V5VulkanPhysicalDeviceCount(void);
-uint32_t V5VulkanInstanceExtensionCount(void);
-uint32_t V5VulkanDeviceExtensionCount(void);
-uint64_t V5VulkanDeviceLocalMemoryBytes(void);
-int32_t V5VulkanGraphicsQueueFamily(void);
+          int V5VulkanRunProbe(void);
+          const char *V5VulkanStatus(void);
+          const char *V5VulkanDeviceName(void);
+          uint32_t V5VulkanAPIVersion(void);
+          uint32_t V5VulkanPhysicalDeviceCount(void);
+          uint32_t V5VulkanInstanceExtensionCount(void);
+          uint32_t V5VulkanDeviceExtensionCount(void);
+          uint64_t V5VulkanDeviceLocalMemoryBytes(void);
+          int32_t V5VulkanGraphicsQueueFamily(void);
 
-#ifdef __cplusplus
-}
-#endif
+          #ifdef __cplusplus
+          }
+          #endif
 
-#endif
-V5EOF04
+          #endif
+          V5EOF04
           mkdir -p "$(dirname 'V5iOS/Runtime/CPU/V5CPUBridge.h')"
           cat > 'V5iOS/Runtime/CPU/V5CPUBridge.h' <<'V5EOF05'
-#ifndef V5CPUBridge_h
-#define V5CPUBridge_h
+          #ifndef V5CPUBridge_h
+          #define V5CPUBridge_h
 
-#include <stdint.h>
+          #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+          #ifdef __cplusplus
+          extern "C" {
+          #endif
 
-typedef struct {
-    int32_t success;
-    uint64_t rax;
-    uint32_t instructionCount;
-    char status[256];
-} V5CPUProbeResultC;
+          typedef struct {
+          int32_t success;
+          uint64_t rax;
+          uint32_t instructionCount;
+          char status[256];
+          } V5CPUProbeResultC;
 
-V5CPUProbeResultC V5RunCPUProbe(void);
+          V5CPUProbeResultC V5RunCPUProbe(void);
 
-#ifdef __cplusplus
-}
-#endif
+          #ifdef __cplusplus
+          }
+          #endif
 
-#endif
-V5EOF05
+          #endif
+          V5EOF05
           mkdir -p "$(dirname 'V5iOS/Runtime/CPU/V5CPUCore.cpp')"
           cat > 'V5iOS/Runtime/CPU/V5CPUCore.cpp' <<'V5EOF06'
-#include "V5CPUBridge.h"
-#include <cstring>
-#include <cstddef>
+          #include "V5CPUBridge.h"
+          #include <cstring>
+          #include <cstddef>
 
-namespace {
-struct CPUState {
-    uint64_t rax = 0;
-    bool halted = false;
-};
+          namespace {
+          struct CPUState {
+          uint64_t rax = 0;
+          bool halted = false;
+          };
 
-static uint32_t readU32(const uint8_t* p) {
-    return (uint32_t)p[0] |
+          static uint32_t readU32(const uint8_t* p) {
+          return (uint32_t)p[0] |
            ((uint32_t)p[1] << 8) |
            ((uint32_t)p[2] << 16) |
            ((uint32_t)p[3] << 24);
-}
+          }
 
-static uint64_t readU64(const uint8_t* p) {
-    uint64_t value = 0;
-    for (int i = 0; i < 8; ++i) value |= ((uint64_t)p[i] << (i * 8));
-    return value;
-}
+          static uint64_t readU64(const uint8_t* p) {
+          uint64_t value = 0;
+          for (int i = 0; i < 8; ++i) value |= ((uint64_t)p[i] << (i * 8));
+          return value;
+          }
 
-class TinyX64Executor {
-public:
-    bool run(const uint8_t* code, size_t size, CPUState& cpu, uint32_t& count, const char*& error) {
-        size_t ip = 0;
-        count = 0;
-        while (ip < size && !cpu.halted && count < 128) {
+          class TinyX64Executor {
+          public:
+          bool run(const uint8_t* code, size_t size, CPUState& cpu, uint32_t& count, const char*& error) {
+          size_t ip = 0;
+          count = 0;
+          while (ip < size && !cpu.halted && count < 128) {
             ++count;
 
             // NOP
@@ -1144,150 +1144,150 @@ public:
 
             error = "unsupported x86-64 opcode in V5CPU foundation";
             return false;
-        }
+          }
 
-        if (!cpu.halted) {
+          if (!cpu.halted) {
             error = "program did not halt";
             return false;
-        }
-        return true;
-    }
-};
-}
+          }
+          return true;
+          }
+          };
+          }
 
-V5CPUProbeResultC V5RunCPUProbe(void) {
-    V5CPUProbeResultC out{};
+          V5CPUProbeResultC V5RunCPUProbe(void) {
+          V5CPUProbeResultC out{};
 
-    // Synthetic x86-64: mov rax,42 ; add rax,10 ; sub rax,2 ; ret
-    const uint8_t program[] = {
-        0x48, 0xB8, 0x2A,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-        0x48, 0x05, 0x0A,0x00,0x00,0x00,
-        0x48, 0x2D, 0x02,0x00,0x00,0x00,
-        0xC3
-    };
+          // Synthetic x86-64: mov rax,42 ; add rax,10 ; sub rax,2 ; ret
+          const uint8_t program[] = {
+          0x48, 0xB8, 0x2A,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+          0x48, 0x05, 0x0A,0x00,0x00,0x00,
+          0x48, 0x2D, 0x02,0x00,0x00,0x00,
+          0xC3
+          };
 
-    CPUState cpu;
-    uint32_t count = 0;
-    const char* error = nullptr;
-    TinyX64Executor engine;
-    const bool ok = engine.run(program, sizeof(program), cpu, count, error);
+          CPUState cpu;
+          uint32_t count = 0;
+          const char* error = nullptr;
+          TinyX64Executor engine;
+          const bool ok = engine.run(program, sizeof(program), cpu, count, error);
 
-    out.success = (ok && cpu.rax == 50) ? 1 : 0;
-    out.rax = cpu.rax;
-    out.instructionCount = count;
-    const char* status = out.success
-        ? "V5CPU PASS: internal x86-64 decoder/executor produced RAX=50"
-        : (error ? error : "V5CPU probe failed");
-    std::strncpy(out.status, status, sizeof(out.status) - 1);
-    out.status[sizeof(out.status) - 1] = '\0';
-    return out;
-}
-V5EOF06
+          out.success = (ok && cpu.rax == 50) ? 1 : 0;
+          out.rax = cpu.rax;
+          out.instructionCount = count;
+          const char* status = out.success
+          ? "V5CPU PASS: internal x86-64 decoder/executor produced RAX=50"
+          : (error ? error : "V5CPU probe failed");
+          std::strncpy(out.status, status, sizeof(out.status) - 1);
+          out.status[sizeof(out.status) - 1] = '\0';
+          return out;
+          }
+          V5EOF06
           mkdir -p "$(dirname 'V5iOS/Runtime/CPU/V5CPUProbe.swift')"
           cat > 'V5iOS/Runtime/CPU/V5CPUProbe.swift' <<'V5EOF07'
-import Foundation
+          import Foundation
 
-struct V5CPUProbeResult {
-    let success: Bool
-    let rax: UInt64
-    let instructionCount: UInt32
-    let status: String
-}
+          struct V5CPUProbeResult {
+          let success: Bool
+          let rax: UInt64
+          let instructionCount: UInt32
+          let status: String
+          }
 
-enum V5CPUProbe {
-    static func run() -> V5CPUProbeResult {
-        let result = V5RunCPUProbe()
-        let status = withUnsafePointer(to: result.status) { ptr in
+          enum V5CPUProbe {
+          static func run() -> V5CPUProbeResult {
+          let result = V5RunCPUProbe()
+          let status = withUnsafePointer(to: result.status) { ptr in
             ptr.withMemoryRebound(to: CChar.self, capacity: 256) {
                 String(cString: $0)
             }
-        }
-        return V5CPUProbeResult(
+          }
+          return V5CPUProbeResult(
             success: result.success != 0,
             rax: result.rax,
             instructionCount: result.instructionCount,
             status: status
-        )
-    }
-}
-V5EOF07
+          )
+          }
+          }
+          V5EOF07
           mkdir -p "$(dirname 'V5iOS/Runtime/PE/PEImage.swift')"
           cat > 'V5iOS/Runtime/PE/PEImage.swift' <<'V5EOF08'
-import Foundation
+          import Foundation
 
-struct PESection: Identifiable, Hashable {
-    let id = UUID()
-    let name: String
-    let virtualAddress: UInt32
-    let virtualSize: UInt32
-    let rawOffset: UInt32
-    let rawSize: UInt32
-    let characteristics: UInt32
-}
+          struct PESection: Identifiable, Hashable {
+          let id = UUID()
+          let name: String
+          let virtualAddress: UInt32
+          let virtualSize: UInt32
+          let rawOffset: UInt32
+          let rawSize: UInt32
+          let characteristics: UInt32
+          }
 
-struct PEImageInfo {
-    let path: String
-    let machine: UInt16
-    let numberOfSections: UInt16
-    let entryPointRVA: UInt32
-    let imageBase: UInt64
-    let imageSize: UInt32
-    let subsystem: UInt16
-    let sections: [PESection]
-    let importedDLLs: [String]
+          struct PEImageInfo {
+          let path: String
+          let machine: UInt16
+          let numberOfSections: UInt16
+          let entryPointRVA: UInt32
+          let imageBase: UInt64
+          let imageSize: UInt32
+          let subsystem: UInt16
+          let sections: [PESection]
+          let importedDLLs: [String]
 
-    var isAMD64: Bool { machine == 0x8664 }
-    var machineName: String { isAMD64 ? "x86-64 (AMD64)" : String(format: "0x%04X", machine) }
-}
+          var isAMD64: Bool { machine == 0x8664 }
+          var machineName: String { isAMD64 ? "x86-64 (AMD64)" : String(format: "0x%04X", machine) }
+          }
 
-enum PEParseError: Error, LocalizedError {
-    case tooSmall
-    case missingMZ
-    case invalidPEOffset
-    case missingPESignature
-    case unsupportedOptionalHeader(UInt16)
-    case malformed(String)
+          enum PEParseError: Error, LocalizedError {
+          case tooSmall
+          case missingMZ
+          case invalidPEOffset
+          case missingPESignature
+          case unsupportedOptionalHeader(UInt16)
+          case malformed(String)
 
-    var errorDescription: String? {
-        switch self {
-        case .tooSmall: return "File is too small to be a PE image."
-        case .missingMZ: return "Missing DOS MZ signature."
-        case .invalidPEOffset: return "Invalid PE header offset."
-        case .missingPESignature: return "Missing PE signature."
-        case .unsupportedOptionalHeader(let magic): return String(format: "Unsupported PE optional header 0x%04X.", magic)
-        case .malformed(let message): return message
-        }
-    }
-}
+          var errorDescription: String? {
+          switch self {
+          case .tooSmall: return "File is too small to be a PE image."
+          case .missingMZ: return "Missing DOS MZ signature."
+          case .invalidPEOffset: return "Invalid PE header offset."
+          case .missingPESignature: return "Missing PE signature."
+          case .unsupportedOptionalHeader(let magic): return String(format: "Unsupported PE optional header 0x%04X.", magic)
+          case .malformed(let message): return message
+          }
+          }
+          }
 
-enum PEParser {
-    static func parse(url: URL) throws -> PEImageInfo {
-        let data = try Data(contentsOf: url, options: [.mappedIfSafe])
-        guard data.count >= 0x100 else { throw PEParseError.tooSmall }
-        guard data.byte(at: 0) == 0x4D, data.byte(at: 1) == 0x5A else { throw PEParseError.missingMZ }
+          enum PEParser {
+          static func parse(url: URL) throws -> PEImageInfo {
+          let data = try Data(contentsOf: url, options: [.mappedIfSafe])
+          guard data.count >= 0x100 else { throw PEParseError.tooSmall }
+          guard data.byte(at: 0) == 0x4D, data.byte(at: 1) == 0x5A else { throw PEParseError.missingMZ }
 
-        let peOffset = Int(try data.u32(at: 0x3C))
-        guard peOffset >= 0, peOffset + 24 < data.count else { throw PEParseError.invalidPEOffset }
-        guard try data.u32(at: peOffset) == 0x00004550 else { throw PEParseError.missingPESignature }
+          let peOffset = Int(try data.u32(at: 0x3C))
+          guard peOffset >= 0, peOffset + 24 < data.count else { throw PEParseError.invalidPEOffset }
+          guard try data.u32(at: peOffset) == 0x00004550 else { throw PEParseError.missingPESignature }
 
-        let fileHeader = peOffset + 4
-        let machine = try data.u16(at: fileHeader)
-        let sectionCount = try data.u16(at: fileHeader + 2)
-        let optionalHeaderSize = Int(try data.u16(at: fileHeader + 16))
-        let optional = fileHeader + 20
-        guard optional + optionalHeaderSize <= data.count else { throw PEParseError.malformed("Truncated optional header.") }
+          let fileHeader = peOffset + 4
+          let machine = try data.u16(at: fileHeader)
+          let sectionCount = try data.u16(at: fileHeader + 2)
+          let optionalHeaderSize = Int(try data.u16(at: fileHeader + 16))
+          let optional = fileHeader + 20
+          guard optional + optionalHeaderSize <= data.count else { throw PEParseError.malformed("Truncated optional header.") }
 
-        let magic = try data.u16(at: optional)
-        guard magic == 0x20B else { throw PEParseError.unsupportedOptionalHeader(magic) }
+          let magic = try data.u16(at: optional)
+          guard magic == 0x20B else { throw PEParseError.unsupportedOptionalHeader(magic) }
 
-        let entry = try data.u32(at: optional + 16)
-        let imageBase = try data.u64(at: optional + 24)
-        let imageSize = try data.u32(at: optional + 56)
-        let subsystem = try data.u16(at: optional + 68)
+          let entry = try data.u32(at: optional + 16)
+          let imageBase = try data.u64(at: optional + 24)
+          let imageSize = try data.u32(at: optional + 56)
+          let subsystem = try data.u16(at: optional + 68)
 
-        let sectionTable = optional + optionalHeaderSize
-        var sections: [PESection] = []
-        for i in 0..<Int(sectionCount) {
+          let sectionTable = optional + optionalHeaderSize
+          var sections: [PESection] = []
+          for i in 0..<Int(sectionCount) {
             let off = sectionTable + i * 40
             guard off + 40 <= data.count else { throw PEParseError.malformed("Truncated section table.") }
             let name = data.asciiString(at: off, maxLength: 8)
@@ -1299,10 +1299,10 @@ enum PEParser {
                 rawSize: try data.u32(at: off + 16),
                 characteristics: try data.u32(at: off + 36)
             ))
-        }
+          }
 
-        var imports: [String] = []
-        if optionalHeaderSize >= 128 {
+          var imports: [String] = []
+          if optionalHeaderSize >= 128 {
             let importRVA = try data.u32(at: optional + 120)
             let importSize = try data.u32(at: optional + 124)
             if importRVA != 0, importSize != 0, let importOffset = fileOffset(forRVA: importRVA, sections: sections) {
@@ -1324,9 +1324,9 @@ enum PEParser {
                     descriptorCount += 1
                 }
             }
-        }
+          }
 
-        return PEImageInfo(
+          return PEImageInfo(
             path: url.path,
             machine: machine,
             numberOfSections: sectionCount,
@@ -1336,94 +1336,94 @@ enum PEParser {
             subsystem: subsystem,
             sections: sections,
             importedDLLs: Array(Set(imports)).sorted()
-        )
-    }
+          )
+          }
 
-    private static func fileOffset(forRVA rva: UInt32, sections: [PESection]) -> Int? {
-        for section in sections {
+          private static func fileOffset(forRVA rva: UInt32, sections: [PESection]) -> Int? {
+          for section in sections {
             let span = max(section.virtualSize, section.rawSize)
             if rva >= section.virtualAddress && rva < section.virtualAddress &+ span {
                 return Int(section.rawOffset &+ (rva - section.virtualAddress))
             }
-        }
-        return nil
-    }
-}
+          }
+          return nil
+          }
+          }
 
-private extension Data {
-    func byte(at offset: Int) -> UInt8 {
-        self[index(startIndex, offsetBy: offset)]
-    }
+          private extension Data {
+          func byte(at offset: Int) -> UInt8 {
+          self[index(startIndex, offsetBy: offset)]
+          }
 
-    func u16(at offset: Int) throws -> UInt16 {
-        guard offset >= 0, offset + 2 <= count else { throw PEParseError.malformed("Read outside file bounds.") }
-        return UInt16(byte(at: offset)) | (UInt16(byte(at: offset + 1)) << 8)
-    }
+          func u16(at offset: Int) throws -> UInt16 {
+          guard offset >= 0, offset + 2 <= count else { throw PEParseError.malformed("Read outside file bounds.") }
+          return UInt16(byte(at: offset)) | (UInt16(byte(at: offset + 1)) << 8)
+          }
 
-    func u32(at offset: Int) throws -> UInt32 {
-        guard offset >= 0, offset + 4 <= count else { throw PEParseError.malformed("Read outside file bounds.") }
-        return UInt32(byte(at: offset)) |
+          func u32(at offset: Int) throws -> UInt32 {
+          guard offset >= 0, offset + 4 <= count else { throw PEParseError.malformed("Read outside file bounds.") }
+          return UInt32(byte(at: offset)) |
             (UInt32(byte(at: offset + 1)) << 8) |
             (UInt32(byte(at: offset + 2)) << 16) |
             (UInt32(byte(at: offset + 3)) << 24)
-    }
+          }
 
-    func u64(at offset: Int) throws -> UInt64 {
-        guard offset >= 0, offset + 8 <= count else { throw PEParseError.malformed("Read outside file bounds.") }
-        var value: UInt64 = 0
-        for i in 0..<8 { value |= UInt64(byte(at: offset + i)) << UInt64(i * 8) }
-        return value
-    }
+          func u64(at offset: Int) throws -> UInt64 {
+          guard offset >= 0, offset + 8 <= count else { throw PEParseError.malformed("Read outside file bounds.") }
+          var value: UInt64 = 0
+          for i in 0..<8 { value |= UInt64(byte(at: offset + i)) << UInt64(i * 8) }
+          return value
+          }
 
-    func asciiString(at offset: Int, maxLength: Int) -> String {
-        guard offset >= 0, offset < count else { return "" }
-        var bytes: [UInt8] = []
-        for i in 0..<maxLength where offset + i < count {
+          func asciiString(at offset: Int, maxLength: Int) -> String {
+          guard offset >= 0, offset < count else { return "" }
+          var bytes: [UInt8] = []
+          for i in 0..<maxLength where offset + i < count {
             let b = byte(at: offset + i)
             if b == 0 { break }
             bytes.append(b)
-        }
-        return String(bytes: bytes, encoding: .ascii) ?? ""
-    }
+          }
+          return String(bytes: bytes, encoding: .ascii) ?? ""
+          }
 
-    func cString(at offset: Int, maxLength: Int) -> String {
-        asciiString(at: offset, maxLength: maxLength)
-    }
-}
-V5EOF08
+          func cString(at offset: Int, maxLength: Int) -> String {
+          asciiString(at: offset, maxLength: maxLength)
+          }
+          }
+          V5EOF08
           mkdir -p "$(dirname 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift')"
           cat > 'V5iOS/Runtime/Graphics/MetalPipelineProbe.swift' <<'V5EOF09'
-import Foundation
-import Metal
+          import Foundation
+          import Metal
 
-struct MetalPipelineProbeResult {
-    let success: Bool
-    let deviceName: String
-    let status: String
-}
+          struct MetalPipelineProbeResult {
+          let success: Bool
+          let deviceName: String
+          let status: String
+          }
 
-enum MetalPipelineProbe {
-    static func run() -> MetalPipelineProbeResult {
-        guard let device = MTLCreateSystemDefaultDevice() else {
+          enum MetalPipelineProbe {
+          static func run() -> MetalPipelineProbeResult {
+          guard let device = MTLCreateSystemDefaultDevice() else {
             return .init(success: false, deviceName: "Unavailable", status: "No Metal device")
-        }
-        guard let queue = device.makeCommandQueue() else {
+          }
+          guard let queue = device.makeCommandQueue() else {
             return .init(success: false, deviceName: device.name, status: "Could not create Metal command queue")
-        }
+          }
 
-        let source = """
-        #include <metal_stdlib>
-        using namespace metal;
-        struct VOut { float4 position [[position]]; float4 color; };
-        vertex VOut v5_vertex(uint id [[vertex_id]]) {
+          let source = """
+          #include <metal_stdlib>
+          using namespace metal;
+          struct VOut { float4 position [[position]]; float4 color; };
+          vertex VOut v5_vertex(uint id [[vertex_id]]) {
             float2 p[3] = { float2(0.0, 0.75), float2(-0.75, -0.65), float2(0.75, -0.65) };
             float4 c[3] = { float4(0.1,1.0,0.55,1), float4(0.95,0.72,0.25,1), float4(0.2,0.55,1.0,1) };
             VOut o; o.position = float4(p[id], 0, 1); o.color = c[id]; return o;
-        }
-        fragment float4 v5_fragment(VOut in [[stage_in]]) { return in.color; }
-        """
+          }
+          fragment float4 v5_fragment(VOut in [[stage_in]]) { return in.color; }
+          """
 
-        do {
+          do {
             let library = try device.makeLibrary(source: source, options: nil)
             guard let vertex = library.makeFunction(name: "v5_vertex"),
                   let fragment = library.makeFunction(name: "v5_fragment") else {
@@ -1464,226 +1464,226 @@ enum MetalPipelineProbe {
                 deviceName: device.name,
                 status: ok ? "V5 Metal PASS: shader compiled, pipeline created, offscreen triangle submitted" : "Metal command buffer failed: \(commandBuffer.error?.localizedDescription ?? "unknown")"
             )
-        } catch {
+          } catch {
             return .init(success: false, deviceName: device.name, status: "Metal pipeline error: \(error.localizedDescription)")
-        }
-    }
-}
-V5EOF09
+          }
+          }
+          }
+          V5EOF09
           mkdir -p "$(dirname 'V5iOS/Runtime/System/JITCapability.swift')"
           cat > 'V5iOS/Runtime/System/JITCapability.swift' <<'V5EOF10'
-import Foundation
-import Security
+          import Foundation
+          import Security
 
-struct JITCapabilityResult {
-    let allowJITEntitlement: Bool
-    let getTaskAllow: Bool
-    let status: String
-}
+          struct JITCapabilityResult {
+          let allowJITEntitlement: Bool
+          let getTaskAllow: Bool
+          let status: String
+          }
 
-enum JITCapability {
-    static func probe() -> JITCapabilityResult {
-        let task = SecTaskCreateFromSelf(nil)
-        let allowJIT = entitlementBool(task: task, key: "com.apple.security.cs.allow-jit")
-        let getTask = entitlementBool(task: task, key: "get-task-allow")
+          enum JITCapability {
+          static func probe() -> JITCapabilityResult {
+          let task = SecTaskCreateFromSelf(nil)
+          let allowJIT = entitlementBool(task: task, key: "com.apple.security.cs.allow-jit")
+          let getTask = entitlementBool(task: task, key: "get-task-allow")
 
-        let status: String
-        if allowJIT {
+          let status: String
+          if allowJIT {
             status = "JIT entitlement is present."
-        } else if getTask {
+          } else if getTask {
             status = "Debugger entitlement present; JIT may be enabled by an attached debugger/JIT helper."
-        } else {
+          } else {
             status = "No permanent JIT entitlement detected. A debugger/JIT helper is required for a future dynamic translator on standard iOS."
-        }
-        return .init(allowJITEntitlement: allowJIT, getTaskAllow: getTask, status: status)
-    }
+          }
+          return .init(allowJITEntitlement: allowJIT, getTaskAllow: getTask, status: status)
+          }
 
-    private static func entitlementBool(task: SecTask?, key: String) -> Bool {
-        guard let task,
+          private static func entitlementBool(task: SecTask?, key: String) -> Bool {
+          guard let task,
               let value = SecTaskCopyValueForEntitlement(task, key as CFString, nil) else { return false }
-        return (value as? Bool) == true
-    }
-}
-V5EOF10
+          return (value as? Bool) == true
+          }
+          }
+          V5EOF10
           mkdir -p "$(dirname 'V5iOS/Runtime/System/RuntimeMemoryProbe.swift')"
           cat > 'V5iOS/Runtime/System/RuntimeMemoryProbe.swift' <<'V5EOF11'
-import Foundation
-import Darwin
+          import Foundation
+          import Darwin
 
-struct RuntimeMemoryProbeResult {
-    let success: Bool
-    let bytes: Int
-    let status: String
-}
+          struct RuntimeMemoryProbeResult {
+          let success: Bool
+          let bytes: Int
+          let status: String
+          }
 
-enum RuntimeMemoryProbe {
-    static func run() -> RuntimeMemoryProbeResult {
-        let page = max(Int(getpagesize()), 4096)
-        let size = page * 4
-        let ptr = mmap(nil, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0)
-        guard ptr != MAP_FAILED else {
+          enum RuntimeMemoryProbe {
+          static func run() -> RuntimeMemoryProbeResult {
+          let page = max(Int(getpagesize()), 4096)
+          let size = page * 4
+          let ptr = mmap(nil, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0)
+          guard ptr != MAP_FAILED else {
             return .init(success: false, bytes: 0, status: "mmap RW allocation failed")
-        }
-        defer { munmap(ptr, size) }
+          }
+          defer { munmap(ptr, size) }
 
-        let bytes = ptr!.assumingMemoryBound(to: UInt8.self)
-        for i in 0..<min(size, 256) { bytes[i] = UInt8(i & 0xFF) }
-        let ok = bytes[42] == 42
-        return .init(success: ok, bytes: size, status: ok ? "V5 memory PASS: RW guest arena allocated and verified" : "Guest memory verification failed")
-    }
-}
-V5EOF11
+          let bytes = ptr!.assumingMemoryBound(to: UInt8.self)
+          for i in 0..<min(size, 256) { bytes[i] = UInt8(i & 0xFF) }
+          let ok = bytes[42] == 42
+          return .init(success: ok, bytes: size, status: ok ? "V5 memory PASS: RW guest arena allocated and verified" : "Guest memory verification failed")
+          }
+          }
+          V5EOF11
           mkdir -p "$(dirname 'V5iOS/Runtime/System/RuntimeBookmarkStore.swift')"
           cat > 'V5iOS/Runtime/System/RuntimeBookmarkStore.swift' <<'V5EOF12'
-import Foundation
+          import Foundation
 
-enum RuntimeBookmarkStore {
-    private static let key = "V5Runtime.GameFolderBookmark"
+          enum RuntimeBookmarkStore {
+          private static let key = "V5Runtime.GameFolderBookmark"
 
-    static func save(url: URL) throws {
-        let data = try url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil)
-        UserDefaults.standard.set(data, forKey: key)
-    }
+          static func save(url: URL) throws {
+          let data = try url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil)
+          UserDefaults.standard.set(data, forKey: key)
+          }
 
-    static func restore() -> URL? {
-        guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
-        var stale = false
-        do {
+          static func restore() -> URL? {
+          guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
+          var stale = false
+          do {
             let url = try URL(resolvingBookmarkData: data, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &stale)
             if stale { try? save(url: url) }
             return url
-        } catch {
+          } catch {
             return nil
-        }
-    }
+          }
+          }
 
-    static func clear() {
-        UserDefaults.standard.removeObject(forKey: key)
-    }
-}
-V5EOF12
+          static func clear() {
+          UserDefaults.standard.removeObject(forKey: key)
+          }
+          }
+          V5EOF12
           mkdir -p "$(dirname 'V5iOS/Runtime/System/V5RuntimeCoordinator.swift')"
           cat > 'V5iOS/Runtime/System/V5RuntimeCoordinator.swift' <<'V5EOF13'
-import Foundation
+          import Foundation
 
-struct V5RuntimeStage: Identifiable {
-    let id = UUID()
-    let name: String
-    let passed: Bool
-    let detail: String
-}
+          struct V5RuntimeStage: Identifiable {
+          let id = UUID()
+          let name: String
+          let passed: Bool
+          let detail: String
+          }
 
-final class V5RuntimeCoordinator: ObservableObject {
-    @Published var selectedFolder: URL?
-    @Published var executableURL: URL?
-    @Published var peInfo: PEImageInfo?
-    @Published var stages: [V5RuntimeStage] = []
-    @Published var logLines: [String] = []
-    @Published var busy = false
+          final class V5RuntimeCoordinator: ObservableObject {
+          @Published var selectedFolder: URL?
+          @Published var executableURL: URL?
+          @Published var peInfo: PEImageInfo?
+          @Published var stages: [V5RuntimeStage] = []
+          @Published var logLines: [String] = []
+          @Published var busy = false
 
-    init() {
-        if let restored = RuntimeBookmarkStore.restore() {
+          init() {
+          if let restored = RuntimeBookmarkStore.restore() {
             selectedFolder = restored
-        }
-    }
+          }
+          }
 
-    func select(folder: URL) {
-        selectedFolder = folder
-        do { try RuntimeBookmarkStore.save(url: folder) }
-        catch { append("Bookmark warning: \(error.localizedDescription)") }
-        inspectSelectedFolder()
-    }
+          func select(folder: URL) {
+          selectedFolder = folder
+          do { try RuntimeBookmarkStore.save(url: folder) }
+          catch { append("Bookmark warning: \(error.localizedDescription)") }
+          inspectSelectedFolder()
+          }
 
-    func inspectSelectedFolder() {
-        guard let folder = selectedFolder else { return }
-        busy = true
-        stages = []
-        peInfo = nil
-        executableURL = nil
-        append("Inspecting \(folder.lastPathComponent)…")
+          func inspectSelectedFolder() {
+          guard let folder = selectedFolder else { return }
+          busy = true
+          stages = []
+          peInfo = nil
+          executableURL = nil
+          append("Inspecting \(folder.lastPathComponent)…")
 
-        let accessed = folder.startAccessingSecurityScopedResource()
-        defer {
+          let accessed = folder.startAccessingSecurityScopedResource()
+          defer {
             if accessed { folder.stopAccessingSecurityScopedResource() }
             busy = false
-        }
+          }
 
-        let fm = FileManager.default
-        let candidates = ["GTA5.exe", "GTA5_Enhanced.exe", "PlayGTAV.exe"]
-        var exe: URL?
-        for name in candidates {
+          let fm = FileManager.default
+          let candidates = ["GTA5.exe", "GTA5_Enhanced.exe", "PlayGTAV.exe"]
+          var exe: URL?
+          for name in candidates {
             let candidate = folder.appendingPathComponent(name)
             if fm.fileExists(atPath: candidate.path) { exe = candidate; break }
-        }
+          }
 
-        guard let exe else {
+          guard let exe else {
             stages.append(.init(name: "Game executable", passed: false, detail: "GTA5.exe was not found at the selected folder root."))
             append("GTA5.exe not found")
             return
-        }
-        executableURL = exe
-        stages.append(.init(name: "Game executable", passed: true, detail: exe.lastPathComponent))
+          }
+          executableURL = exe
+          stages.append(.init(name: "Game executable", passed: true, detail: exe.lastPathComponent))
 
-        do {
+          do {
             let info = try PEParser.parse(url: exe)
             peInfo = info
             stages.append(.init(name: "PE64 loader", passed: info.isAMD64, detail: "\(info.machineName), \(info.numberOfSections) sections, \(info.importedDLLs.count) imported DLLs"))
             append("PE parsed: entry RVA 0x\(String(info.entryPointRVA, radix: 16)), image base 0x\(String(info.imageBase, radix: 16))")
-        } catch {
+          } catch {
             stages.append(.init(name: "PE64 loader", passed: false, detail: error.localizedDescription))
             append("PE parse failed: \(error.localizedDescription)")
-        }
-    }
+          }
+          }
 
-    func runFoundationDiagnostics() {
-        busy = true
-        stages.removeAll(where: { ["V5CPU core", "Metal pipeline", "Guest memory", "JIT capability"].contains($0.name) })
-        append("Running V5 Runtime Core diagnostics…")
+          func runFoundationDiagnostics() {
+          busy = true
+          stages.removeAll(where: { ["V5CPU core", "Metal pipeline", "Guest memory", "JIT capability"].contains($0.name) })
+          append("Running V5 Runtime Core diagnostics…")
 
-        let cpu = V5CPUProbe.run()
-        stages.append(.init(name: "V5CPU core", passed: cpu.success, detail: "\(cpu.status) • \(cpu.instructionCount) instructions"))
-        append(cpu.status)
+          let cpu = V5CPUProbe.run()
+          stages.append(.init(name: "V5CPU core", passed: cpu.success, detail: "\(cpu.status) • \(cpu.instructionCount) instructions"))
+          append(cpu.status)
 
-        let memory = RuntimeMemoryProbe.run()
-        stages.append(.init(name: "Guest memory", passed: memory.success, detail: "\(memory.status) • \(memory.bytes) bytes"))
-        append(memory.status)
+          let memory = RuntimeMemoryProbe.run()
+          stages.append(.init(name: "Guest memory", passed: memory.success, detail: "\(memory.status) • \(memory.bytes) bytes"))
+          append(memory.status)
 
-        let metal = MetalPipelineProbe.run()
-        stages.append(.init(name: "Metal pipeline", passed: metal.success, detail: "\(metal.status) • \(metal.deviceName)"))
-        append(metal.status)
+          let metal = MetalPipelineProbe.run()
+          stages.append(.init(name: "Metal pipeline", passed: metal.success, detail: "\(metal.status) • \(metal.deviceName)"))
+          append(metal.status)
 
-        let jit = JITCapability.probe()
-        stages.append(.init(name: "JIT capability", passed: jit.allowJITEntitlement || jit.getTaskAllow, detail: jit.status))
-        append(jit.status)
+          let jit = JITCapability.probe()
+          stages.append(.init(name: "JIT capability", passed: jit.allowJITEntitlement || jit.getTaskAllow, detail: jit.status))
+          append(jit.status)
 
-        busy = false
-    }
+          busy = false
+          }
 
-    var foundationReady: Bool {
-        let required = ["V5CPU core", "Metal pipeline", "Guest memory"]
-        return required.allSatisfy { name in stages.first(where: { $0.name == name })?.passed == true }
-    }
+          var foundationReady: Bool {
+          let required = ["V5CPU core", "Metal pipeline", "Guest memory"]
+          return required.allSatisfy { name in stages.first(where: { $0.name == name })?.passed == true }
+          }
 
-    private func append(_ line: String) {
-        let stamp = ISO8601DateFormatter().string(from: Date())
-        logLines.append("[\(stamp)] \(line)")
-        if logLines.count > 150 { logLines.removeFirst(logLines.count - 150) }
-    }
-}
-V5EOF13
+          private func append(_ line: String) {
+          let stamp = ISO8601DateFormatter().string(from: Date())
+          logLines.append("[\(stamp)] \(line)")
+          if logLines.count > 150 { logLines.removeFirst(logLines.count - 150) }
+          }
+          }
+          V5EOF13
           mkdir -p "$(dirname 'V5iOS/Runtime/UI/RuntimeDashboardView.swift')"
           cat > 'V5iOS/Runtime/UI/RuntimeDashboardView.swift' <<'V5EOF14'
-import SwiftUI
+          import SwiftUI
 
-struct RuntimeDashboardView: View {
-    @ObservedObject var runtime: V5RuntimeCoordinator
-    @Binding var showFolderPicker: Bool
+          struct RuntimeDashboardView: View {
+          @ObservedObject var runtime: V5RuntimeCoordinator
+          @Binding var showFolderPicker: Bool
 
-    private let green = Color(red: 0.04, green: 0.72, blue: 0.43)
-    private let gold = Color(red: 0.92, green: 0.72, blue: 0.34)
+          private let green = Color(red: 0.04, green: 0.72, blue: 0.43)
+          private let gold = Color(red: 0.92, green: 0.72, blue: 0.34)
 
-    var body: some View {
-        NavigationView {
+          var body: some View {
+          NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     VStack(alignment: .leading, spacing: 4) {
@@ -1801,12 +1801,12 @@ struct RuntimeDashboardView: View {
                 .padding(16)
             }
             .navigationBarHidden(true)
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
+          }
+          .navigationViewStyle(StackNavigationViewStyle())
+          }
 
-    private func card<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) { content() }
+          private func card<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+          VStack(alignment: .leading, spacing: 12) { content() }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
@@ -1814,85 +1814,85 @@ struct RuntimeDashboardView: View {
             )
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.05), lineWidth: 1))
-    }
+          }
 
-    private func row(_ key: String, _ value: String) -> some View {
-        HStack(alignment: .top) {
+          private func row(_ key: String, _ value: String) -> some View {
+          HStack(alignment: .top) {
             Text(key).foregroundColor(.secondary)
             Spacer(minLength: 12)
             Text(value).font(.system(.body, design: .monospaced)).multilineTextAlignment(.trailing)
-        }
-    }
-}
-V5EOF14
+          }
+          }
+          }
+          V5EOF14
           rm -rf V5iOS/Assets.xcassets
           mkdir -p V5iOS/Assets.xcassets/AppIcon.appiconset V5iOS/Assets.xcassets/BrandLogo.imageset
 
           cat > /tmp/v5icon.swift <<'V5ICON'
-import AppKit
+          import AppKit
 
-func renderIcon(size: Int, path: String) throws {
-    let image = NSImage(size: NSSize(width: size, height: size))
-    image.lockFocus()
-    let rect = NSRect(x: 0, y: 0, width: size, height: size)
-    let gradient = NSGradient(colors: [
-        NSColor(calibratedRed: 0.01, green: 0.10, blue: 0.075, alpha: 1),
-        NSColor(calibratedRed: 0.01, green: 0.025, blue: 0.022, alpha: 1)
-    ])!
-    gradient.draw(in: rect, angle: -45)
+          func renderIcon(size: Int, path: String) throws {
+          let image = NSImage(size: NSSize(width: size, height: size))
+          image.lockFocus()
+          let rect = NSRect(x: 0, y: 0, width: size, height: size)
+          let gradient = NSGradient(colors: [
+          NSColor(calibratedRed: 0.01, green: 0.10, blue: 0.075, alpha: 1),
+          NSColor(calibratedRed: 0.01, green: 0.025, blue: 0.022, alpha: 1)
+          ])!
+          gradient.draw(in: rect, angle: -45)
 
-    let inset = CGFloat(size) * 0.055
-    let border = NSBezierPath(roundedRect: rect.insetBy(dx: inset, dy: inset), xRadius: CGFloat(size)*0.18, yRadius: CGFloat(size)*0.18)
-    NSColor(calibratedRed: 0.88, green: 0.67, blue: 0.23, alpha: 0.85).setStroke()
-    border.lineWidth = CGFloat(size) * 0.012
-    border.stroke()
+          let inset = CGFloat(size) * 0.055
+          let border = NSBezierPath(roundedRect: rect.insetBy(dx: inset, dy: inset), xRadius: CGFloat(size)*0.18, yRadius: CGFloat(size)*0.18)
+          NSColor(calibratedRed: 0.88, green: 0.67, blue: 0.23, alpha: 0.85).setStroke()
+          border.lineWidth = CGFloat(size) * 0.012
+          border.stroke()
 
-    let p = NSMutableParagraphStyle(); p.alignment = .center
-    let title = "V5"
-    let titleAttrs: [NSAttributedString.Key: Any] = [
-        .font: NSFont.systemFont(ofSize: CGFloat(size) * 0.38, weight: .black),
-        .foregroundColor: NSColor.white,
-        .paragraphStyle: p
-    ]
-    title.draw(in: NSRect(x: 0, y: CGFloat(size)*0.37, width: CGFloat(size), height: CGFloat(size)*0.44), withAttributes: titleAttrs)
+          let p = NSMutableParagraphStyle(); p.alignment = .center
+          let title = "V5"
+          let titleAttrs: [NSAttributedString.Key: Any] = [
+          .font: NSFont.systemFont(ofSize: CGFloat(size) * 0.38, weight: .black),
+          .foregroundColor: NSColor.white,
+          .paragraphStyle: p
+          ]
+          title.draw(in: NSRect(x: 0, y: CGFloat(size)*0.37, width: CGFloat(size), height: CGFloat(size)*0.44), withAttributes: titleAttrs)
 
-    let subAttrs: [NSAttributedString.Key: Any] = [
-        .font: NSFont.systemFont(ofSize: CGFloat(size) * 0.12, weight: .bold),
-        .foregroundColor: NSColor(calibratedRed: 0.93, green: 0.72, blue: 0.30, alpha: 1),
-        .paragraphStyle: p
-    ]
-    "iOS".draw(in: NSRect(x: 0, y: CGFloat(size)*0.25, width: CGFloat(size), height: CGFloat(size)*0.18), withAttributes: subAttrs)
+          let subAttrs: [NSAttributedString.Key: Any] = [
+          .font: NSFont.systemFont(ofSize: CGFloat(size) * 0.12, weight: .bold),
+          .foregroundColor: NSColor(calibratedRed: 0.93, green: 0.72, blue: 0.30, alpha: 1),
+          .paragraphStyle: p
+          ]
+          "iOS".draw(in: NSRect(x: 0, y: CGFloat(size)*0.25, width: CGFloat(size), height: CGFloat(size)*0.18), withAttributes: subAttrs)
 
-    image.unlockFocus()
-    guard let tiff = image.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff), let png = rep.representation(using: .png, properties: [:]) else { throw NSError(domain:"V5",code:1) }
-    try png.write(to: URL(fileURLWithPath: path))
-}
-try renderIcon(size: 1024, path: "V5iOS/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
-try renderIcon(size: 512, path: "V5iOS/Assets.xcassets/BrandLogo.imageset/BrandLogo.png")
-V5ICON
+          image.unlockFocus()
+          guard let tiff = image.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff), let png = rep.representation(using: .png, properties: [:]) else { throw NSError(domain:"V5",code:1) }
+          try png.write(to: URL(fileURLWithPath: path))
+          }
+          try renderIcon(size: 1024, path: "V5iOS/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
+          try renderIcon(size: 512, path: "V5iOS/Assets.xcassets/BrandLogo.imageset/BrandLogo.png")
+          V5ICON
           swift /tmp/v5icon.swift
 
           cat > V5iOS/Assets.xcassets/Contents.json <<'V5ASSETROOT'
-{"info":{"author":"xcode","version":1}}
-V5ASSETROOT
+          {"info":{"author":"xcode","version":1}}
+          V5ASSETROOT
           cat > V5iOS/Assets.xcassets/AppIcon.appiconset/Contents.json <<'V5APPICONJSON'
-{
-  "images" : [
-    { "idiom" : "universal", "platform" : "ios", "size" : "1024x1024", "filename" : "AppIcon-1024.png" }
-  ],
-  "info" : { "author" : "xcode", "version" : 1 }
-}
-V5APPICONJSON
+          {
+          "images" : [
+          { "idiom" : "universal", "platform" : "ios", "size" : "1024x1024", "filename" : "AppIcon-1024.png" }
+          ],
+          "info" : { "author" : "xcode", "version" : 1 }
+          }
+          V5APPICONJSON
           cat > V5iOS/Assets.xcassets/BrandLogo.imageset/Contents.json <<'V5BRANDJSON'
-{
-  "images" : [
-    { "idiom" : "universal", "scale" : "1x", "filename" : "BrandLogo.png" },
-    { "idiom" : "universal", "scale" : "2x" },
-    { "idiom" : "universal", "scale" : "3x" }
-  ],
-  "info" : { "author" : "xcode", "version" : 1 }
-}
-V5BRANDJSON
+          {
+          "images" : [
+          { "idiom" : "universal", "scale" : "1x", "filename" : "BrandLogo.png" },
+          { "idiom" : "universal", "scale" : "2x" },
+          { "idiom" : "universal", "scale" : "3x" }
+          ],
+          "info" : { "author" : "xcode", "version" : 1 }
+          }
+          V5BRANDJSON
 
       - name: Download MoltenVK 1.4.2
         run: |
